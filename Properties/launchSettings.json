@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "stockDataImporter": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "ey/AJjLBM54=",
+  "success": true,
+  "projectFilePath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter\\stockDataImporter.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\h-abe\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.23.0\\microsoft.visualstudio.azure.containers.tools.targets.1.23.0.nupkg.sha512"
+  ],
+  "logs": []
+}
