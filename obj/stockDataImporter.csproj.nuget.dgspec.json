@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Data\\projects\\stockDataImporter\\stockDataImporter\\stockDataImporter.csproj": {}
+    "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj": {}
   },
   "projects": {
-    "C:\\Data\\projects\\stockDataImporter\\stockDataImporter\\stockDataImporter.csproj": {
+    "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter\\stockDataImporter.csproj",
+        "projectUniqueName": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
         "projectName": "stockDataImporter",
-        "projectPath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter\\stockDataImporter.csproj",
+        "projectPath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
         "packagesPath": "C:\\Users\\h-abe\\.nuget\\packages\\",
-        "outputPath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter\\obj\\",
+        "outputPath": "C:\\Data\\projects\\stockDataImporter\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -50,9 +51,21 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.23.0, )"
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[9.5.0, )"
             }
           },
           "imports": [
