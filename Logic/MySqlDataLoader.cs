@@ -5,6 +5,9 @@ using MySql.Data.MySqlClient;
 
 namespace stockDataImporter.Logic
 {
+    /// <summary>
+	/// MySQLデータローダー
+	/// </summary>
     public class MySqlDataLoader
     {
         private readonly string _connectionString;

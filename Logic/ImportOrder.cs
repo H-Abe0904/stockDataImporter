@@ -46,7 +46,7 @@ namespace stockDataImporter.Logic
 			{ ImportOrders.LzStockData, new ImportConfig(Path.GetFileName(StockBaseDir), "LzStockData") },
 			{ ImportOrders.backOrders, new ImportConfig(Path.GetFileName(OdrBaseDir), "backOrders") },
 		};
-		
+
 		/// <summary>
 		/// [デバッグ用]インポート順序リスト取得
 		/// </summary>
