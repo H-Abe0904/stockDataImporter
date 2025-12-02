@@ -24,14 +24,22 @@ namespace stockDataImporter.Logic
         /// <summary>
         /// ストアドプロシージャ実行
         /// </summary>
-        /// <param name="spName">MySQLのプロシージャ名</param>
-        /// <param name="fileName">取込対象のCSVファイル名</param>
+        /// <param name="fileName">取込対象CSVファイル</param>
         /// <param name="tableName">取込先テーブル名</param>
         /// <returns></returns>
-        public async Task ExecuteSPAsync(string spName, string fileName, string tableName)
+        /// <exception cref="ArgumentException">指定ファイル名が存在しなかった時</exception>
+        public async Task ExecuteSPAsync(string fileName, string tableName)
         {
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
+
+            // ファイル名に基づいてストアドプロシージャ名を決定
+            var spName = fileName switch
+            {
+                _ when fileName.Contains("LzStockData") => "ImportLzStockDataFromCsv",  // LZ在庫データ取込用プロシージャについては仮名
+                _ when fileName.Contains("backOrders") => "import_djn_orders",
+                _ => throw new ArgumentException($"不明なファイル名: {fileName}"),
+            };
 
             await using var command = new MySqlCommand(spName, connection)
             {

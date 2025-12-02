@@ -11,10 +11,15 @@ namespace stockDataImporter
 		/// </summary>
 		static void Get_BackOrders()
 		{
-			var app = new ProcessStartInfo();   // This method is intentionally left blank.
-			app.FileName = System.Environment.GetFolderPath(Environment.SpecialFolder.A;
-			app.Arguments = "/co:1 /data:1 /code:4109 /winlogin:False";
-			Process.Start(app);
+			// 販売管理システムの自動実行exeファイルのパス
+			string exePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Programs\Ohken\HanbaiENTCloud\bin\Ohken.Hanbai.HBRelationKicker.UI.exe";
+
+			var app = new ProcessStartInfo();
+
+			app.FileName = exePath;
+			app.Arguments = "/co:1 /data:1 /code:4109 /winlogin:False";	// 受注伝票データ取得用引数
+			
+			Process.Start(app);	// 受注伝票データ取得プロセス起動(完了フラグの伝票を除く)
 		}
 		/// <summary>
 		/// データ挿入処理(MySQL)
@@ -42,7 +47,7 @@ namespace stockDataImporter
 			foreach (var order in ImportConfigMap.GetImportOrders())
 			{
 				var config = ImportConfigMap.Map[order];
-				await dataLoader.ExecuteSPAsync("ImportDataFromCsv", config.FileName, config.TableName);
+				await dataLoader.ExecuteSPAsync(config.FileName, config.TableName);
 			}
 		}
 		/// <summary>
