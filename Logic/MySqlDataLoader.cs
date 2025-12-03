@@ -37,17 +37,18 @@ namespace stockDataImporter.Logic
             var spName = fileName switch
             {
                 _ when fileName.Contains("LzStockData") => "ImportLzStockDataFromCsv",  // LZ在庫データ取込用プロシージャについては仮名
-                _ when fileName.Contains("backOrders") => "import_djn_orders",
-                _ => throw new ArgumentException($"不明なファイル名: {fileName}"),
+                _ when fileName.Contains("backOrders") => "import_djn_orders",          // 受注伝票データ取込用プロシージャ
+                _ => throw new ArgumentException($"不明なファイル名: {fileName}"),      // 不明なファイル名の場合のエラー処理
             };
 
+            // ストアドプロシージャの実行
             await using var command = new MySqlCommand(spName, connection)
             {
                 CommandType = System.Data.CommandType.StoredProcedure
             };
 
-            command.Parameters.AddWithValue("@fileName", fileName);
-            command.Parameters.AddWithValue("@tableName", tableName);
+            command.Parameters.AddWithValue("@fileName", fileName);     // ストアドプロシージャのパラメータ名に合わせる
+            command.Parameters.AddWithValue("@tableName", tableName);   // ストアドプロシージャのパラメータ名に合わせる
 
             try
             {
