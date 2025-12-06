@@ -25,10 +25,9 @@ namespace stockDataImporter.Logic
         /// ストアドプロシージャ実行
         /// </summary>
         /// <param name="fileName">取込対象CSVファイル</param>
-        /// <param name="tableName">取込先テーブル名</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">指定ファイル名が存在しなかった時</exception>
-        public async Task ExecuteSPAsync(string fileName, string tableName)
+        public async Task ExecuteSPAsync(string fileName)
         {
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -48,12 +47,13 @@ namespace stockDataImporter.Logic
             };
 
             command.Parameters.AddWithValue("@fileName", fileName);     // ストアドプロシージャのパラメータ名に合わせる
-            command.Parameters.AddWithValue("@tableName", tableName);   // ストアドプロシージャのパラメータ名に合わせる
 
             try
             {
-                var result = await command.ExecuteScalarAsync();
-                Console.WriteLine($"プロシージャ名: '{spName}'は正常に実行されました. 結果: {result}");
+                Console.WriteLine($"{fileName}");
+                var result = await command.ExecuteNonQueryAsync();
+
+                //Console.WriteLine($"プロシージャ名: '{spName}'は正常に実行されました. 結果: {result}");
 
             }
             catch (Exception ex)

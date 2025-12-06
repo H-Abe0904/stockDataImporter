@@ -43,3 +43,4 @@ C:\Data\projects\stockDataImporter\obj\Debug\net10.0\refint\stockDataImporter.dl
 C:\Data\projects\stockDataImporter\obj\Debug\net10.0\stockDataImporter.pdb
 C:\Data\projects\stockDataImporter\obj\Debug\net10.0\stockDataImporter.genruntimeconfig.cache
 C:\Data\projects\stockDataImporter\obj\Debug\net10.0\ref\stockDataImporter.dll
+C:\Data\projects\stockDataImporter\bin\Debug\net10.0\appsettings.json

@@ -10,7 +10,7 @@ namespace stockDataImporter.Logic
 	/// </summary>
 	public enum ImportOrders
 	{
-		LzStockData = 1,        // 1: LZ在庫データ
+		//LzStockData = 1,        // 1: LZ在庫データ
 		backOrders = 2,         // 2: DJN売上残データ
 	}
 
@@ -20,17 +20,15 @@ namespace stockDataImporter.Logic
 	public struct ImportConfig
 	{
 		public string FileName { get; }
-		public string TableName { get; }
 
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="fileName">baseDirに存在するファイル名</param>
 		/// <param name="tableName">インポート先のテーブル名</param>
-		public ImportConfig(string fileName, string tableName)
+		public ImportConfig(string fileName)
 		{
 			FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
-			TableName = tableName ?? throw new ArgumentNullException(nameof(tableName));
 		}
 	}
 
@@ -39,12 +37,12 @@ namespace stockDataImporter.Logic
 	/// </summary>
 	public static class ImportConfigMap
 	{
-		public const string StockBaseDir = @"\\\\habe11-testenv\\daijin_test\\stockData";
-		public const string OdrBaseDir = @"\\\\habe11-daijin\\daijin_test\\backOrders";
+		public const string StockBaseDir = @"\\habe11-testenv\daijin_test\stockData\stock.csv";
+		public const string OdrBaseDir = @"\\habe11-testecv\daijin_test\backOrders\backOrders.csv";
 		public static readonly Dictionary<ImportOrders, ImportConfig> Map = new Dictionary<ImportOrders, ImportConfig>
 		{
-			{ ImportOrders.LzStockData, new ImportConfig(Path.GetFileName(StockBaseDir), "LzStockData") },
-			{ ImportOrders.backOrders, new ImportConfig(Path.GetFileName(OdrBaseDir), "backOrders") },
+			//{ ImportOrders.LzStockData, new ImportConfig(Path.GetFileName(StockBaseDir), "LzStockData") },
+			{ ImportOrders.backOrders, new ImportConfig(Path.GetFileName(OdrBaseDir)) },
 		};
 
 		/// <summary>

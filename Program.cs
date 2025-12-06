@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using stockDataImporter.Logic;
 
@@ -10,7 +11,7 @@ namespace stockDataImporter
 		/// 販売管理システムの自動実行exeファイルのパス
 		/// </summary>
 		public static string exePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Programs\Ohken\HanbaiENTCloud\bin\Ohken.Hanbai.HBRelationKicker.UI.exe";
-		
+
 		/// <summary>
 		/// 販売管理システムから売上残データを取得
 		/// </summary>
@@ -21,8 +22,13 @@ namespace stockDataImporter
 			app.FileName = exePath;
 			app.Arguments = "/co:1 /data:1 /code:4109 /winlogin:False"; // 受注伝票データ取得用引数
 
-			Process.Start(app); // 受注伝票データ取得プロセス起動(完了フラグの伝票を除く)
-		}
+			using var process = Process.Start(app); // 受注伝票データ取得プロセス起動(完了フラグの伝票を除く)
+
+            if (process != null)
+            {
+                process.WaitForExit();
+            }
+        }
 		/// <summary>
 		/// データ挿入処理(MySQL)
 		/// </summary>
@@ -49,7 +55,7 @@ namespace stockDataImporter
 			foreach (var order in ImportConfigMap.GetImportOrders())
 			{
 				var config = ImportConfigMap.Map[order];
-				await dataLoader.ExecuteSPAsync(config.FileName, config.TableName);
+				await dataLoader.ExecuteSPAsync(config.FileName);
 			}
 		}
 		/// <summary>
