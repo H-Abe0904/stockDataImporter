@@ -58,6 +58,11 @@ namespace stockDataImporter
 				await dataLoader.ExecuteQueryAsync(config.FileName);
 			}
 		}
+
+		static async void getStockData() {
+			string fileName = "stock_forEC.csv";
+			string 
+			}
 		/// <summary>
 		/// メインエントリポイント
 		/// </summary>
