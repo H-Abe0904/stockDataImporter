@@ -36,7 +36,7 @@
               "RelativeDocumentMoniker": "Logic\\MySqlDataLoader.cs",
               "ToolTip": "C:\\Data\\projects\\stockDataImporter\\Logic\\MySqlDataLoader.cs",
               "RelativeToolTip": "Logic\\MySqlDataLoader.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAAwCUAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAADgv0gAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-06T00:54:13.671Z",
               "EditorCaption": ""
@@ -51,8 +51,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-12-06T00:56:01.212Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-06T00:56:01.212Z"
             },
             {
               "$type": "Document",
@@ -62,7 +61,7 @@
               "RelativeDocumentMoniker": "Logic\\ImportOrder.cs",
               "ToolTip": "C:\\Data\\projects\\stockDataImporter\\Logic\\ImportOrder.cs",
               "RelativeToolTip": "Logic\\ImportOrder.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAADwvycAAABXAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA0AAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-06T00:38:54.152Z",
               "EditorCaption": ""
@@ -75,7 +74,7 @@
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Data\\projects\\stockDataImporter\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAIA5wD8AAAAhAAAAAAAAAA==",
+              "ViewState": "AgIAAAcAAAAAAAAAAAApwBwAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-01T07:18:48.564Z",
               "EditorCaption": ""

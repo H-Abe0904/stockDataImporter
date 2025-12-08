@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Common;
 
 namespace stockDataImporter.Logic
 {
@@ -21,44 +22,64 @@ namespace stockDataImporter.Logic
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        /// <summary>
-        /// ストアドプロシージャ実行
-        /// </summary>
-        /// <param name="fileName">取込対象CSVファイル</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">指定ファイル名が存在しなかった時</exception>
-        public async Task ExecuteSPAsync(string fileName)
+
+        public async Task ExecuteQueryAsync(string fileName)
         {
+            string stockDataPath = @"D:\daijin_test\stockData\";
+            string backOrderPath = @"D:\daijin_test\backOrders\backOrders.csv";
+
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // ファイル名に基づいてストアドプロシージャ名を決定
-            var spName = fileName switch
+            // ファイル名に基づいて適切なテーブルのレコードを削除し、データをロードするクエリを選択
+            string truncateQuery = fileName switch
             {
-                _ when fileName.Contains("LzStockData") => "ImportLzStockDataFromCsv",  // LZ在庫データ取込用プロシージャについては仮名
-                _ when fileName.Contains("backOrders") => "import_djn_orders",          // 受注伝票データ取込用プロシージャ
+                _ when fileName.Contains("LzStockData") => "TRUNCATE TABLE dbwrk_lz_stock",            
+                _ when fileName.Contains("backOrders") => "TRUNCATE TABLE dbwrk_djnodr_flat",          
                 _ => throw new ArgumentException($"不明なファイル名: {fileName}"),      // 不明なファイル名の場合のエラー処理
             };
 
-            // ストアドプロシージャの実行
-            await using var command = new MySqlCommand(spName, connection)
+            // データロードクエリの選択
+            string loadQuery = fileName switch
             {
-                CommandType = System.Data.CommandType.StoredProcedure
+                _ when fileName.Contains("LzStockData") => "LOAD DATA INFILE @fileName INTO TABLE dbwrk_lz_stock FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES;", // LZ在庫データ取込用プロシージャについては仮名
+                
+                _ when fileName.Contains("backOrders") => $@"LOAD DATA INFILE '{backOrderPath.Replace(@"\", @"\\")}'
+                INTO TABLE dbwrk_djnodr_flat
+                FIELDS TERMINATED BY ','
+                ENCLOSED BY '""'
+                LINES TERMINATED BY '\r\n' 
+                IGNORE 1 LINES;", // 受注伝票データ一括取込用クエリ
+                
+                _ => throw new ArgumentException($"不明なファイル名: {fileName}"),      // 不明なファイル名の場合のエラー処理
             };
 
-            command.Parameters.AddWithValue("@fileName", fileName);     // ストアドプロシージャのパラメータ名に合わせる
+            // 各テーブルのレコード一括消去
+            await using var truncateCmd = new MySqlCommand(truncateQuery, connection)
+            {
+                CommandType = System.Data.CommandType.Text
+            };
+            await truncateCmd.ExecuteNonQueryAsync(); // レコード削除実行
+
+            // データファイルのロード
+            await using var loadCmd = new MySqlCommand(loadQuery, connection)
+            {
+                CommandType = System.Data.CommandType.Text
+            };
+
+            //loadCmd.Parameters.AddWithValue("@fileName", Path.Combine(Directory.GetCurrentDirectory(), fileName));  
 
             try
             {
                 Console.WriteLine($"{fileName}");
-                var result = await command.ExecuteNonQueryAsync();
+                var result = await loadCmd.ExecuteNonQueryAsync();
 
-                //Console.WriteLine($"プロシージャ名: '{spName}'は正常に実行されました. 結果: {result}");
+                Console.WriteLine($"プロシージャ名: '{loadCmd}'は正常に実行されました. 結果: {result}");
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"プロシージャ名: '{spName}'の実行中にエラーが発生しました. エラー内容: {ex.Message}");
+                Console.WriteLine($"データ追加時にエラーが発生しました。 エラー内容: {ex.Message}");
                 throw;
             }
 

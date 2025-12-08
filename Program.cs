@@ -55,7 +55,7 @@ namespace stockDataImporter
 			foreach (var order in ImportConfigMap.GetImportOrders())
 			{
 				var config = ImportConfigMap.Map[order];
-				await dataLoader.ExecuteSPAsync(config.FileName);
+				await dataLoader.ExecuteQueryAsync(config.FileName);
 			}
 		}
 		/// <summary>
