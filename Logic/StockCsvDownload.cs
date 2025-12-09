@@ -36,12 +36,11 @@ namespace stockDataImporter.Logic
         /// <exception cref="NotImplementedException"></exception>
         private async Task<DataTable> GetStockData(string viewName)
         {
-
             // DB接続とSELECTクエリ実行、DataTable格納処理
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            string getStockQuery = $"SELECT 商品コード, 有効在庫数 FROM {viewName}";
+            string getStockQuery = $"SELECT 商品コード AS JANCode, 有効在庫数 AS 引当可能数 FROM {viewName}";
 
             await using var cmd = new MySqlCommand(getStockQuery, connection);
 
@@ -49,9 +48,7 @@ namespace stockDataImporter.Logic
             var dataTable = new DataTable();
 
             adapter.Fill(dataTable);
-
-
-            throw new NotImplementedException();
+            return dataTable;
         }
 
         /// <summary>
@@ -65,23 +62,32 @@ namespace stockDataImporter.Logic
             var sb = new StringBuilder();
             var header = dataTable.Columns.Cast<DataColumn>()
                 .Select(column => $"\"{column.ColumnName.Replace("\"", "\"\"")}\"");
-            sb.AppendLine(string.Join(", ", header));
+            sb.AppendLine(string.Join(",", header));
 
             foreach (DataRow row in dataTable.Rows)
             {
                 var fields = row.ItemArray.Select(field =>
                 {
                     if (field == null || field == DBNull.Value) return "";
+                    string? fieldString = field?.ToString();
 
-                    string fieldString = field.ToString();
-                    return $"\"{fieldString.Replace("\"", "\"\"")}\"";
+                    return $"\"{fieldString?.Replace("\"", "\"\"")}\"";
                 });
 
                 sb.AppendLine(string.Join(",", fields));
 
-                // CSV文字列とファイル書込み処理
-                throw new NotImplementedException();
             }
+            try
+            {
+                Console.WriteLine($"在庫データCSVファイル書込処理中: {outputFilePath}");
+                // CSV文字列とファイル書込み処理
+                File.WriteAllText(outputFilePath, sb.ToString(), Encoding.GetEncoding("Shift_JIS"));
+            }
+            catch(Exception ex)
+			{
+                Console.WriteLine($"在庫データCSV書込エラー: {ex.Message}");
+                throw;
+			}
 
         }
     }

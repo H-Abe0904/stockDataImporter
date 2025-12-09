@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using stockDataImporter.Logic;
@@ -15,20 +16,21 @@ namespace stockDataImporter
 		/// <summary>
 		/// 販売管理システムから売上残データを取得
 		/// </summary>
-		static void Get_BackOrders(string exePath)
+		static async Task Get_BackOrders(string exePath)
 		{
 			var app = new ProcessStartInfo();
 
 			app.FileName = exePath;
 			app.Arguments = "/co:1 /data:1 /code:4109 /winlogin:False"; // 受注伝票データ取得用引数
 
-			using var process = Process.Start(app); // 受注伝票データ取得プロセス起動(完了フラグの伝票を除く)
+			using var process = Process.Start(app); 					// 受注伝票データ取得プロセス起動(完了フラグの伝票を除く)
 
-            if (process != null)
-            {
-                process.WaitForExit();
-            }
-        }
+			if (process != null)
+			{
+				process.WaitForExit();
+			}
+		}
+
 		/// <summary>
 		/// データ挿入処理(MySQL)
 		/// </summary>
@@ -57,12 +59,23 @@ namespace stockDataImporter
 				var config = ImportConfigMap.Map[order];
 				await dataLoader.ExecuteQueryAsync(config.FileName);
 			}
+
+			await getStockData(connectionString); // 有効在庫データ取得処理
 		}
 
-		static async void getStockData() {
+		/// <summary>
+		/// / 有効在庫データ取得処理
+		/// </summary>
+		/// <param name="connectionString"> </param>
+		static async Task getStockData(string connectionString)
+		{
 			string fileName = "stock_forEC.csv";
-			string 
-			}
+			string outputFilePath = @"\\chuo3\edi\data\sys\" + fileName;
+
+			var stockCsvDownloader = new StockCsvDownload(connectionString);
+			await stockCsvDownloader.DownloadAsync("vrwrk_cglink_workstock", outputFilePath);
+		}
+
 		/// <summary>
 		/// メインエントリポイント
 		/// </summary>
@@ -70,7 +83,8 @@ namespace stockDataImporter
 		/// <returns></returns>
 		static async Task Main(string[] args)
 		{
-			Get_BackOrders(exePath);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            await Get_BackOrders(exePath);
 			await InsertData();
 
 
