@@ -1466,7 +1466,7 @@
       "code": "NU1510",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "PackageReference System.Text.Encoding.CodePages は取り除かれません。このパッケージは不要である可能性があるため、依存関係から削除することを検討してください。",
+      "message": "PackageReference System.Text.Encoding.CodePages will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
       "libraryId": "System.Text.Encoding.CodePages",
       "targetGraphs": [
         "net10.0"
