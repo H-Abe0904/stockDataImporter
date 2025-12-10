@@ -4,7 +4,7 @@ using System.Data;
 using System.Text;
 using MySql.Data.MySqlClient;
 
-namespace stockDataImporter.Logic
+namespace stockDataImporter.Logic.ImportStockData
 {
     internal class StockCsvDownload
     {

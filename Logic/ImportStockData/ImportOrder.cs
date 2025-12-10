@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Org.BouncyCastle.Asn1.X509.Qualified;
 
-namespace stockDataImporter.Logic
+namespace stockDataImporter.Logic.ImportStockData
 {
 	/// <summary>
 	/// インポート順序
