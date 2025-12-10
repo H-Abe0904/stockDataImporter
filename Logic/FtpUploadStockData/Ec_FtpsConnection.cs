@@ -1,13 +1,13 @@
 namespace stockDataImporter.Logic.ImportStockData
 {
-	public class Ec_FtpsConnectionInfo
+	public class FtpsConnectionInfo
 	{
-		public string Host { get; set; }
+		public required string Host { get; set; }
 		public int Port { get; set; } = 21;
-		public string FtpUser { get; }
-		public string FtpPassword { get; }
+		public required string Username { get; set; }
+		public required string Password { get; set;}
 		public bool EnableSsl { get; set; } = true;
-		public string RemoteDirectory { get; set; }
+		public required string RemoteDirectory { get; set; }
 
 
 

@@ -10,6 +10,10 @@ namespace stockDataImporter.Logic.ImportStockData
     {
         private readonly string _connectionString;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="connectionString">FTPS接続情報</param> 
         public StockCsvDownload(string connectionString)
         {
             _connectionString = connectionString;
