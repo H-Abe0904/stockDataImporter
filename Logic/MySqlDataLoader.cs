@@ -25,7 +25,7 @@ namespace stockDataImporter.Logic
 
         public async Task ExecuteQueryAsync(string fileName)
         {
-            string stockDataPath = @"D:\daijin_test\stockData\";
+            string stockDataPath = @"D:\daijin_test\stockData\stock.csv";
             string backOrderPath = @"D:\daijin_test\backOrders\backOrders.csv";
 
             await using var connection = new MySqlConnection(_connectionString);
