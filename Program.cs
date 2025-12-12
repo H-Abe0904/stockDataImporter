@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using stockDataImporter.Logic.ImportStockData;
 using stockDataImporter.Logic;
 
 namespace stockDataImporter
@@ -69,8 +70,8 @@ namespace stockDataImporter
 		/// <param name="connectionString"> </param>
 		static async Task getStockData(string connectionString)
 		{
-			string fileName = "stock_forEC.csv";
-			string outputFilePath = @"\\chuo3\edi\data\sys\" + fileName;
+			string outFileName = "stock_forEC.csv";
+			string outputFilePath = @"\\chuo3\edi\data\sys\" + outFileName;
 
 			var stockCsvDownloader = new StockCsvDownload(connectionString);
 			await stockCsvDownloader.DownloadAsync("vrwrk_cglink_workstock", outputFilePath);

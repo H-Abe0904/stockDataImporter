@@ -10,7 +10,7 @@ namespace stockDataImporter.Logic.ImportStockData
 	/// </summary>
 	public enum ImportOrders
 	{
-		//LzStockData = 1,        // 1: LZ在庫データ
+		LzStockData = 1,        // 1: LZ在庫データ
 		backOrders = 2,         // 2: DJN売上残データ
 	}
 
