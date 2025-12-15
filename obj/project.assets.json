@@ -84,11 +84,11 @@
           }
         }
       },
-      "Microsoft.Extensions.Configuration/10.0.0": {
+      "Microsoft.Extensions.Configuration/10.0.1": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Abstractions": "10.0.0",
-          "Microsoft.Extensions.Primitives": "10.0.0"
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.1",
+          "Microsoft.Extensions.Primitives": "10.0.1"
         },
         "compile": {
           "lib/net10.0/Microsoft.Extensions.Configuration.dll": {
@@ -577,10 +577,10 @@
         "lib/netstandard2.1/K4os.Hash.xxHash.xml"
       ]
     },
-    "Microsoft.Extensions.Configuration/10.0.0": {
-      "sha512": "H4SWETCh/cC5L1WtWchHR6LntGk3rDTTznZMssr4cL8IbDmMWBxY+MOGDc/ASnqNolLKPIWHWeuC1ddiL/iNPw==",
+    "Microsoft.Extensions.Configuration/10.0.1": {
+      "sha512": "njoRekyMIK+smav8B6KL2YgIfUtlsRNuT7wvurpLW+m/hoRKVnoELk2YxnUnWRGScCd1rukLMxShwLqEOKowDg==",
       "type": "package",
-      "path": "microsoft.extensions.configuration/10.0.0",
+      "path": "microsoft.extensions.configuration/10.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -601,7 +601,7 @@
         "lib/net9.0/Microsoft.Extensions.Configuration.xml",
         "lib/netstandard2.0/Microsoft.Extensions.Configuration.dll",
         "lib/netstandard2.0/Microsoft.Extensions.Configuration.xml",
-        "microsoft.extensions.configuration.10.0.0.nupkg.sha512",
+        "microsoft.extensions.configuration.10.0.1.nupkg.sha512",
         "microsoft.extensions.configuration.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -1189,7 +1189,7 @@
   "projectFileDependencyGroups": {
     "net10.0": [
       "FluentFTP >= 53.0.2",
-      "Microsoft.Extensions.Configuration >= 10.0.0",
+      "Microsoft.Extensions.Configuration >= 10.0.1",
       "Microsoft.Extensions.Configuration.Binder >= 10.0.1",
       "Microsoft.Extensions.Configuration.Json >= 10.0.0",
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.23.0",
@@ -1254,7 +1254,7 @@
           },
           "Microsoft.Extensions.Configuration": {
             "target": "Package",
-            "version": "[10.0.0, )"
+            "version": "[10.0.1, )"
           },
           "Microsoft.Extensions.Configuration.Binder": {
             "target": "Package",
@@ -1576,17 +1576,8 @@
       "code": "NU1510",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "PackageReference System.Text.Encoding.CodePages will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "message": "PackageReference System.Text.Encoding.CodePages は取り除かれません。このパッケージは不要である可能性があるため、依存関係から削除することを検討してください。",
       "libraryId": "System.Text.Encoding.CodePages",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1605",
-      "level": "Error",
-      "message": "Warning As Error: Detected package downgrade: Microsoft.Extensions.Configuration from 10.0.1 to 10.0.0. Reference the package directly from the project to select a different version. \r\n stockDataImporter -> Microsoft.Extensions.Configuration.Binder 10.0.1 -> Microsoft.Extensions.Configuration (>= 10.0.1) \r\n stockDataImporter -> Microsoft.Extensions.Configuration (>= 10.0.0)",
-      "libraryId": "Microsoft.Extensions.Configuration",
       "targetGraphs": [
         "net10.0"
       ]

@@ -37,8 +37,8 @@ namespace stockDataImporter.Logic.ImportStockData
 			// アップロード処理の実装
 			using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
 
-			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;
-			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
+			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;				//	Explicitモードで通信
+			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;	//	Passiveモードで通信
 
 			try
 			{

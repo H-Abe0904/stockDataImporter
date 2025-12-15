@@ -142,8 +142,8 @@ namespace stockDataImporter
 		static async Task Main(string[] args)
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			await Get_BackOrders(exePath);
-			await InsertData();
+			// await Get_BackOrders(exePath);
+			// await InsertData();
 			// await Put_StockData();
 			await TestConnection();
 

@@ -31,7 +31,9 @@ namespace stockDataImporter.Logic
         public async Task ExecuteQueryAsync(string fileName)
         {
             //  各ファイルについてはCSV保存ディレクトリを変更予定 12/12
-            string stockDataPath = @"D:\daijin_test\stockData\stock.csv";
+            string[] StockBaseDir = Directory.GetFiles(@"\\cgspider\DataSpiderServista\server\data\DataLink\LogiExp\stock", "*.csv");
+            string stockDataPath = StockBaseDir[0];
+
             string backOrderPath = @"D:\daijin_test\backOrders\backOrders.csv";
 
             await using var connection = new MySqlConnection(_connectionString);
@@ -40,7 +42,7 @@ namespace stockDataImporter.Logic
             // ファイル名に基づいて適切なテーブルのレコードを削除し、データをロードするクエリを選択
             string truncateQuery = fileName switch
             {
-                _ when fileName.Contains("LzStockData") => "TRUNCATE TABLE dbwrk_lz_stock",
+                _ when fileName.Contains("stock") => "TRUNCATE TABLE dbwrk_lz_stock",
                 _ when fileName.Contains("backOrders") => "TRUNCATE TABLE dbwrk_djnodr_flat",
                 _ => throw new ArgumentException($"不明なファイル名: {fileName}"),      // 不明なファイル名の場合のエラー処理
             };
@@ -49,7 +51,7 @@ namespace stockDataImporter.Logic
             string loadQuery = fileName switch
             {
                 //  LZ在庫データは取込時に「商品名」と「検索名称」のカラムを対象外とする
-                _ when fileName.Contains("LzStockData") => $@"LOAD DATA INFILE '{stockDataPath.Replace(@"\", @"\\")}'
+                _ when fileName.Contains("stock") => $@"LOAD DATA INFILE '{stockDataPath.Replace(@"\", @"\\")}'
                 INTO TABLE dbwrk_lz_stock
                 FIELDS TERMINATED BY ','
                 ENCLOSED BY '""'

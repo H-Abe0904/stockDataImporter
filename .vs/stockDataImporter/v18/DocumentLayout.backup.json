@@ -7,20 +7,24 @@
       "RelativeMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|solutionrelative:logic\\mysqldataloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|c:\\data\\projects\\stockdataimporter\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|c:\\data\\projects\\stockdataimporter\\stockdataimporter.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|solutionrelative:stockdataimporter.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|c:\\data\\projects\\stockdataimporter\\logic\\importorder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|solutionrelative:logic\\importorder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|c:\\data\\projects\\stockdataimporter\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|c:\\data\\projects\\stockdataimporter\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|c:\\data\\projects\\stockdataimporter\\logic\\stockcsvdownload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{96AB1367-70BC-E781-1367-0262479B9041}|stockDataImporter.csproj|solutionrelative:logic\\stockcsvdownload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Data\\projects\\stockDataImporter\\Logic\\StockCsvDownload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Logic\\StockCsvDownload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Data\\projects\\stockDataImporter\\Logic\\ImportOrder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Logic\\ImportOrder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -40,10 +44,23 @@
               "RelativeDocumentMoniker": "Logic\\MySqlDataLoader.cs",
               "ToolTip": "C:\\Data\\projects\\stockDataImporter\\Logic\\MySqlDataLoader.cs",
               "RelativeToolTip": "Logic\\MySqlDataLoader.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAADIAAAAAAAAAAADgv0cAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-06T00:54:13.671Z",
               "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "stockDataImporter",
+              "DocumentMoniker": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
+              "RelativeDocumentMoniker": "stockDataImporter.csproj",
+              "ToolTip": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
+              "RelativeToolTip": "stockDataImporter.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-12-15T04:01:56.08Z",
               "EditorCaption": ""
             },
             {
@@ -56,8 +73,7 @@
               "RelativeToolTip": "Logic\\StockCsvDownload.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAFEAAABKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T06:51:38.046Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-08T06:51:38.046Z"
             },
             {
               "$type": "Document",
@@ -69,12 +85,11 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-12-06T00:56:01.212Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-06T00:56:01.212Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "ImportOrder.cs",
               "DocumentMoniker": "C:\\Data\\projects\\stockDataImporter\\Logic\\ImportOrder.cs",
               "RelativeDocumentMoniker": "Logic\\ImportOrder.cs",
@@ -82,18 +97,17 @@
               "RelativeToolTip": "Logic\\ImportOrder.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-06T00:38:54.152Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-06T00:38:54.152Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Data\\projects\\stockDataImporter\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Data\\projects\\stockDataImporter\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEYAAAADAAAAAAAAAA==",
+              "ViewState": "AgIAADIAAAAAAAAAAAArwEsAAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-01T07:18:48.564Z",
               "EditorCaption": ""
