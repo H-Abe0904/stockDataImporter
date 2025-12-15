@@ -24,7 +24,7 @@ namespace stockDataImporter
 			app.FileName = exePath;
 			app.Arguments = "/co:1 /data:1 /code:4109 /winlogin:False"; // 受注伝票データ取得用引数
 
-			using var process = Process.Start(app); 					// 受注伝票データ取得プロセス起動(完了フラグの伝票を除く)
+			using var process = Process.Start(app);                     // 受注伝票データ取得プロセス起動(完了フラグの伝票を除く)
 
 			if (process != null)
 			{
@@ -78,15 +78,74 @@ namespace stockDataImporter
 		}
 
 		/// <summary>
+		/// 在庫データのアップロード
+		/// </summary>
+		/// <returns></returns>
+		static async Task Put_StockData()
+		{
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+				.Build();
+			try
+			{
+				var ftpsInfo = configuration.GetSection("FtpsConnection").Get<FtpsConnectionInfo>();
+
+				var ftpsService = new FtpsClientService(ftpsInfo!);
+
+				await ftpsService.UploadFileAsync("stock_forEC.csv", ftpsInfo!);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"エラーが発生しました: {ex.Message}");
+			}
+
+		}
+
+		/// <summary>
+		/// FTPSサーバへの接続テスト
+		/// </summary>
+		/// <returns></returns>
+		static async Task TestConnection()
+		{
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+				.Build();
+			try
+			{
+				var ftpsInfo = configuration.GetSection("FtpsConnection").Get<FtpsConnectionInfo>();
+
+				var ftpsService = new FtpsClientService(ftpsInfo!);
+				var result = await ftpsService.TestConnectionAsync(ftpsInfo!);
+
+				if (result)
+				{
+					Console.WriteLine("接続テストに成功しました。");
+				}
+				else
+				{
+					Console.WriteLine("接続テストに失敗しました。");
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"接続テスト中にエラーが発生しました: {ex.Message}");
+			}
+		}
+
+		/// <summary>
 		/// メインエントリポイント
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
 		static async Task Main(string[] args)
 		{
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            await Get_BackOrders(exePath);
+			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+			await Get_BackOrders(exePath);
 			await InsertData();
+			// await Put_StockData();
+			await TestConnection();
 
 
 		}

@@ -16,6 +16,7 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		private readonly FtpsConnectionInfo _connectionInfo;
 
+
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
@@ -39,10 +40,36 @@ namespace stockDataImporter.Logic.ImportStockData
 			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;
 			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
 
-			await client.ConnectAsync()
+			try
+			{
+				await client.Connect();
+				string remoteFilePath = Path.Combine(_connectionInfo.RemoteDirectory, Path.GetFileName(localFilePath));
 
-			await Task.Delay(1000); // 仮の非同期処理
-			Console.WriteLine($"Uploaded {localFilePath} to {connectionInfo.Host}");
+				var result = await client.UploadFile(localFilePath, remoteFilePath);
+
+				if (result == FtpStatus.Success)
+				{
+					Console.WriteLine($"FTPS: {localFilePath} を {remoteFilePath} に正常にアップロードしました。");
+				}
+				else
+				{
+					Console.WriteLine($"FTPS: {localFilePath} のアップロードに失敗しました。");
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"FTPS接続/アップロードエラー: {ex.Message}");
+				throw; // エラーを呼び出し元に伝える
+			}
+			finally
+			{
+				// 6. 接続の切断 (Disposeで自動切断されますが、明示的に行う場合)
+				if (client.IsConnected)
+				{
+					await client.Disconnect();
+				}
+			};
 		}
 
 		/// <summary>

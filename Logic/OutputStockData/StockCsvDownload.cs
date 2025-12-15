@@ -25,7 +25,6 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <param name="viewName"></param>
         /// <param name="outputFilePath"></param>
         /// <returns></returns>
-
         public async Task DownloadAsync(string viewName, string outputFilePath)
         {
             var dataTable = await GetStockData(viewName);

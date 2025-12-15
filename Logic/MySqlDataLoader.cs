@@ -22,6 +22,12 @@ namespace stockDataImporter.Logic
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task ExecuteQueryAsync(string fileName)
         {
             //  各ファイルについてはCSV保存ディレクトリを変更予定 12/12
