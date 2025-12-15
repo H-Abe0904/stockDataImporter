@@ -1,4 +1,4 @@
-namespace stockDataImporter.Logic.ImportStockData
+ namespace stockDataImporter.Logic.ImportStockData
 {
 	public class FtpsConnectionInfo
 	{

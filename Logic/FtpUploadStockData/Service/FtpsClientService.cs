@@ -32,7 +32,7 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		/// <param name="localFilePath">ローカルファイルパス</param
 		/// <param name="connectionInfo">FTPS接続情報</param>
-		public async Task UploadFileAsync(string localFilePath, FtpsConnectionInfo _connectionInfo)
+		public async Task UploadFileAsync(string localFilePath)
 		{
 			// アップロード処理の実装
 			using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
@@ -77,11 +77,33 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		/// <param name="connectionInfo">FTPS接続情報</param>
 		/// <returns>成功結果</returns>
-		public Task<bool> TestConnectionAsync(FtpsConnectionInfo connectionInfo)
+		public async Task<bool> TestConnectionAsync()
 		{
-			// 接続テスト処理の実装
-			Console.WriteLine($"Testing connection to {connectionInfo.Host}, {connectionInfo.RemoteDirectory}");
-			return Task.FromResult(true); // 仮の成功結果
+            // 接続テスト処理の実装
+            using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
+
+            client.Config.EncryptionMode = FtpEncryptionMode.Explicit;
+            client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
+
+            Console.WriteLine($"Testing connection to {_connectionInfo.Host}, {_connectionInfo.RemoteDirectory}");
+
+			try
+			{
+				await client.Connect();
+				return client.IsConnected;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("FTPS接続エラー: { ex.Message }");
+				return false;
+			}
+			finally
+			{
+				if (client.IsConnected)
+				{
+					await client.Disconnect();
+				}
+			}
 		}
 	}
 }
