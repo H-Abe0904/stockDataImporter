@@ -32,15 +32,18 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		/// <param name="localFilePath">ローカルファイルパス</param
 		/// <param name="connectionInfo">FTPS接続情報</param>
-		public async Task UploadFileAsync(string localFilePath)
+		public async Task UploadFileAsync(string localFilePath, FtpsConnectionInfo ftpsConnectionInfo)
 		{
 			// アップロード処理の実装
 			using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
 
 			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;				//	Explicitモードで通信
-			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;	//	Passiveモードで通信
+			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;   //	Passiveモードで通信
 
-			try
+            //	証明書を使用しないため強制的にTrue
+            client.Config.ValidateAnyCertificate = true;
+
+            try
 			{
 				await client.Connect();
 				string remoteFilePath = Path.Combine(_connectionInfo.RemoteDirectory, Path.GetFileName(localFilePath));
@@ -77,7 +80,7 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		/// <param name="connectionInfo">FTPS接続情報</param>
 		/// <returns>成功結果</returns>
-		public async Task<bool> TestConnectionAsync()
+		public async Task<bool> TestConnectionAsync(FtpsConnectionInfo connectionInfo)
 		{
             // 接続テスト処理の実装
             using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
@@ -85,16 +88,21 @@ namespace stockDataImporter.Logic.ImportStockData
             client.Config.EncryptionMode = FtpEncryptionMode.Explicit;
             client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
 
+			//	証明書を使用しないため強制的にTrue
+			client.Config.ValidateAnyCertificate = true;
+
+
             Console.WriteLine($"Testing connection to {_connectionInfo.Host}, {_connectionInfo.RemoteDirectory}");
 
 			try
 			{
+
 				await client.Connect();
 				return client.IsConnected;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("FTPS接続エラー: { ex.Message }");
+				Console.WriteLine($"FTPS接続エラー: { ex.Message }");
 				return false;
 			}
 			finally

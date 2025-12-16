@@ -114,10 +114,17 @@ namespace stockDataImporter
 				.Build();
 			try
 			{
-				var ftpsInfo = configuration.GetSection("FtpsConnection").Get<FtpsConnectionInfo>();
+				var ftpsInfo = configuration.GetSection("FtpsConnectionInfo").Get<FtpsConnectionInfo>();
+				if (ftpsInfo == null)
+				{
+					Console.WriteLine("エラー: 設定ファイルに 'FtpsConnection' セクションが見つかりません。");
+					return;
+				}
 
-				var ftpsService = new FtpsClientService(ftpsInfo!);
-				var result = await ftpsService.TestConnectionAsync(ftpsInfo!);
+                Console.WriteLine($"接続先確認: Host={ftpsInfo!.Host}, User={ftpsInfo!.Username}");
+
+                IFtpsClientService ftpsClientService = new FtpsClientService(ftpsInfo!);
+				var result = await ftpsClientService.TestConnectionAsync(ftpsInfo!);
 
 				if (result)
 				{
@@ -142,10 +149,10 @@ namespace stockDataImporter
 		static async Task Main(string[] args)
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			// await Get_BackOrders(exePath);
-			// await InsertData();
+			await Get_BackOrders(exePath);
+			await InsertData();
 			// await Put_StockData();
-			await TestConnection();
+			//await TestConnection();	//	FTPサーバ接続確認用
 
 
 		}

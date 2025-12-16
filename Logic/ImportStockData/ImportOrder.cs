@@ -39,7 +39,7 @@ namespace stockDataImporter.Logic.ImportStockData
 	{
 		// 在庫データの保存ディレクトリ
 		public static string[] StockBaseDir = Directory.GetFiles(@"\\cgspider\DataSpiderServista\server\data\DataLink\LogiExp\stock", "*.csv");
-		public const string OdrBaseDir = @"\\habe11-testecv\daijin_test\backOrders\backOrders.csv";
+		public const string OdrBaseDir = @"\\cgspider\DataSpiderServista\server\data\DataLink\DjExp\BKODR\backOrders.csv";
 		public static readonly Dictionary<ImportOrders, ImportConfig> Map = new Dictionary<ImportOrders, ImportConfig>
 		{
 			{ ImportOrders.LzStockData, new ImportConfig(Path.GetFileName(StockBaseDir[0])) },	//	1件しか存在しない設計なので0番目のファイル名固定
