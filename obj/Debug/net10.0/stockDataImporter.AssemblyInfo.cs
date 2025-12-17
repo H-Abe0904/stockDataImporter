@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("stockDataImporter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dfcac883f2a314284908889cb679906f65c9320a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+18f299882757a5afa93c27ac00e0b291a289d858")]
 [assembly: System.Reflection.AssemblyProductAttribute("stockDataImporter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("stockDataImporter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
