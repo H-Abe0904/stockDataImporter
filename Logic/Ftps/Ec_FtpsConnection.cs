@@ -1,5 +1,8 @@
  namespace stockDataImporter.Logic.ImportStockData
 {
+	/// <summary>
+	/// FTP接続情報
+	/// </summary>
 	public class FtpsConnectionInfo
 	{
 		public required string Host { get; set; }

@@ -34,7 +34,7 @@ namespace stockDataImporter.Logic
             string[] StockBaseDir = Directory.GetFiles(@"\\cgspider\DataSpiderServista\server\data\DataLink\LogiExp\stock", "*.csv");
             string stockDataPath = StockBaseDir[0];
 
-            string backOrderPath = @"D:\daijin_test\backOrders\backOrders.csv";
+            string backOrderPath = @"\\cgspider\DataSpiderServista\server\data\DataLink\DjExp\BKODR\backOrders.csv";
 
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -59,7 +59,7 @@ namespace stockDataImporter.Logic
                 IGNORE 1 LINES
                 (
                     ブロックID, ブロック略称, ロケーション,商品ID, @dummy,在庫数_引当数含む, 引当数, 商品予備項目001, 商品予備項目003
-);", 
+);",
 
                 _ when fileName.Contains("backOrders") => $@"LOAD DATA INFILE '{backOrderPath.Replace(@"\", @"\\")}'
                 INTO TABLE dbwrk_djnodr_flat
