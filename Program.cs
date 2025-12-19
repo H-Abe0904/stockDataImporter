@@ -209,7 +209,7 @@ namespace stockDataImporter
 		static async Task Main()
 		{
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			await Get_BackOrders(exePath);
+			//await Get_BackOrders(exePath);
 			await InsertData();
 			// await Put_StockData();
 			await TestConnection(); //	FTPサーバ接続確認用

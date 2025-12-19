@@ -91,6 +91,7 @@ namespace stockDataImporter.Logic
             try
             {
                 Console.WriteLine($"{fileName}");
+                loadCmd.CommandTimeout = 300; // 5分に延長（デフォルトは30秒）
                 var result = await loadCmd.ExecuteNonQueryAsync();
 
                 Console.WriteLine($"プロシージャ名: '{loadCmd}'は正常に実行されました. 結果: {result}");
