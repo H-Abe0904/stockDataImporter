@@ -17,7 +17,7 @@ namespace stockDataImporter.Logic.ImportStockData
 	/// <summary>
 	/// インポート設定
 	/// </summary>
-	public struct ImportConfig
+	public readonly struct ImportConfig
 	{
 		public string FileName { get; }
 
@@ -52,10 +52,9 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// <returns></returns>
 		public static List<ImportOrders> GetImportOrders()
 		{
-			return Enum.GetValues(typeof(ImportOrders))
+			return [.. Enum.GetValues<ImportOrders>()
 			.Cast<ImportOrders>()
-			.OrderBy(x => (int)x)
-			.ToList();
+			.OrderBy(x => (int)x)];
 		}
 	}
 }

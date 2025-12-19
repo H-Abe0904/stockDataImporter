@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Logic",
+    "\\Logic\\Messaging"
   ],
-  "SelectedNode": "\\stockDataImporter.sln",
+  "SelectedNode": "\\appsettings.json",
   "PreviewInSolutionExplorer": false
 }

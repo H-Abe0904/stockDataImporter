@@ -46,3 +46,7 @@ C:\Data\projects\stockDataImporter\obj\Debug\net10.0\ref\stockDataImporter.dll
 C:\Data\projects\stockDataImporter\bin\Debug\net10.0\appsettings.json
 C:\Data\projects\stockDataImporter\bin\Debug\net10.0\FluentFTP.dll
 C:\Data\projects\stockDataImporter\bin\Debug\net10.0\Microsoft.Extensions.Configuration.Binder.dll
+C:\Data\projects\stockDataImporter\bin\Debug\net10.0\MailKit.dll
+C:\Data\projects\stockDataImporter\bin\Debug\net10.0\MimeKit.dll
+C:\Data\projects\stockDataImporter\bin\Debug\net10.0\System.Security.Cryptography.Pkcs.dll
+C:\Data\projects\stockDataImporter\bin\Debug\net10.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll

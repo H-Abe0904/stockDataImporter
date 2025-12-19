@@ -60,7 +60,7 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <param name="dataTable"></param>
         /// <param name="outputFilePath"></param>
         /// <exception cref="NotImplementedException"></exception>
-        private void Convert2Csv(DataTable dataTable, string outputFilePath)
+        private static void Convert2Csv(DataTable dataTable, string outputFilePath)
         {
             var sb = new StringBuilder();
             var header = dataTable.Columns.Cast<DataColumn>()

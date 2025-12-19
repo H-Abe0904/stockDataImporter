@@ -53,6 +53,7 @@ namespace stockDataImporter.Logic
                 //  LZ在庫データは取込時に「商品名」カラムを対象外とする
                 _ when fileName.Contains("stock") => $@"LOAD DATA INFILE '{stockDataPath.Replace(@"\", @"\\")}'
                 INTO TABLE dbwrk_lz_stock
+                CHARACTER SET cp932
                 FIELDS TERMINATED BY ','
                 ENCLOSED BY '""'
                 LINES TERMINATED BY '\r\n'
@@ -61,8 +62,9 @@ namespace stockDataImporter.Logic
                     ブロックID, ブロック略称, ロケーション,商品ID, @dummy,在庫数_引当数含む, 引当数, 商品予備項目001, 商品予備項目003
 );",
 
-                _ when fileName.Contains("backOrders") => $@"LOAD DATA INFILE '{backOrderPath.Replace(@"\", @"\\")}'
+                _ when fileName.Contains("backOrders") => $@"SET NAMES cp932; LOAD DATA INFILE '{backOrderPath.Replace(@"\", @"\\")}'
                 INTO TABLE dbwrk_djnodr_flat
+                CHARACTER SET cp932
                 FIELDS TERMINATED BY ','
                 ENCLOSED BY '""'
                 LINES TERMINATED BY '\r\n' 
