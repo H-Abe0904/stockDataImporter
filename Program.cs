@@ -32,13 +32,13 @@ namespace stockDataImporter
 				.Build();
 			try
 			{
-				var mailConfig =  configuration.GetSection("EdiMailConfig");
+				var mailConfig = configuration.GetSection("EdiMailConfig");
 				var mailService = new EmailService(mailConfig);
 				Console.WriteLine("メール送信開始");
 				await mailService.SendErrorMailAsync(title, message, mappingKey);
-				
+
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Console.WriteLine($"メール送信失敗{ex.Message}");
 			}
@@ -92,7 +92,7 @@ namespace stockDataImporter
 				}
 
 				// MySQLデータローダーの初期化
-				var dataLoader = new MySqlDataLoader(connectionString);
+				var dataLoader = new MySqlDataLoaderService(connectionString);
 
 				// インポート順序に従ってデータを挿入
 				foreach (var order in ImportConfigMap.GetImportOrders())
@@ -105,7 +105,7 @@ namespace stockDataImporter
 			}
 			catch (Exception ex)
 			{
-				await SendErrMailAsync("データ挿入エラー", $"データ挿入中にエラーが発生しました: {ex.Message}", "Debug");
+				await SendErrMailAsync("データ挿入エラー", $"データ挿入中にエラーが発生しました: {ex.InnerException}", "Debug");
 				Console.WriteLine($"エラーが発生しました: {ex.Message}");
 			}
 
@@ -199,6 +199,18 @@ namespace stockDataImporter
 				Console.WriteLine($"接続テスト中にエラーが発生しました: {ex.Message}");
 			}
 		}
+		/// <summary>
+		/// 在庫データ出力処理メイン(15分単位での自動作成)
+		/// </summary>
+		/// <returns></returns>
+		static async Task StockDataImport()
+		{
+			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+			await Get_BackOrders(exePath);
+			await InsertData();
+			// await Put_StockData();
+			await TestConnection(); //	FTPサーバ接続確認用
+		}
 		// await Main();
 
 		/// <summary>
@@ -208,11 +220,9 @@ namespace stockDataImporter
 		/// <returns></returns>
 		static async Task Main()
 		{
-			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			//await Get_BackOrders(exePath);
-			await InsertData();
-			// await Put_StockData();
-			await TestConnection(); //	FTPサーバ接続確認用
+
+
+
 		}
 	}
 }

@@ -6,9 +6,10 @@ using MySql.Data.MySqlClient;
 
 namespace stockDataImporter.Logic.ImportStockData
 {
-    internal class StockCsvDownload
+    internal class StockCsvDownload : IStockCsvDownloaderService
     {
         private readonly string _connectionString;
+        private readonly string _viewName;
 
         /// <summary>
         /// コンストラクタ
@@ -34,7 +35,7 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <summary>
         /// 有効在庫データ取得・データテーブルへの複製処理
         /// </summary>
-        /// <param name="viewName"></param>
+        /// <param name="viewName">MySQLの在庫出力ビューテーブル名</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         private async Task<DataTable> GetStockData(string viewName)
@@ -93,5 +94,10 @@ namespace stockDataImporter.Logic.ImportStockData
 			}
 
         }
-    }
+
+		public Task DownloadStockCsvAsync(string downloadUrl, string destinationPath)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

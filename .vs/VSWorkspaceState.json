@@ -2,8 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\Logic",
-    "\\Logic\\Messaging"
+    "\\Logic\\Database",
+    "\\Logic\\ImportStockData",
+    "\\Logic\\Messaging",
+    "\\Logic\\OutputStockData"
   ],
-  "SelectedNode": "\\appsettings.json",
+  "SelectedNode": "\\Program.cs",
   "PreviewInSolutionExplorer": false
 }

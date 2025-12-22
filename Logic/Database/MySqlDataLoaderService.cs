@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Common;
@@ -9,30 +10,36 @@ namespace stockDataImporter.Logic
     /// <summary>
 	/// MySQLデータローダー
 	/// </summary>
-    public class MySqlDataLoader
+    public class MySqlDataLoaderService : IMySqlDataLoaderService
     {
+
         private readonly string _connectionString;
+        private readonly string _filePath;
+        private readonly string _tableName;
         /// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="connectionString">在庫連携用DBサーバへの接続クエリ</param>
+		/// <param name="filePath">ファイルパス</param>
+		/// <param name="tableName">テーブル名</param>
 		/// <exception cref="ArgumentNullException">nullの場合のエラー処理</exception>
-        public MySqlDataLoader(string connectionString)
+        public MySqlDataLoaderService(string connectionString, string filePath, string tableName)
         {
-            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _connectionString = connectionString;
+            _filePath = filePath;
+            _tableName = tableName;
         }
 
         /// <summary>
-        /// 
+        /// DBへのデータロード処理
         /// </summary>
-        /// <param name="fileName"></param>
+        /// <param name="fileName">取込ファイル名</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         public async Task ExecuteQueryAsync(string fileName)
         {
             //  各ファイルについてはCSV保存ディレクトリを変更予定 12/12
-            string[] StockBaseDir = Directory.GetFiles(@"\\cgspider\DataSpiderServista\server\data\DataLink\LogiExp\stock", "*.csv");
-            string stockDataPath = StockBaseDir[0];
+            string stockDataPath = @"\\cgspider\DataSpiderServista\server\data\DataLink\LogiExp\stock\lzstock.csv";
 
             string backOrderPath = @"\\cgspider\DataSpiderServista\server\data\DataLink\DjExp\BKODR\backOrders.csv";
 
@@ -53,18 +60,16 @@ namespace stockDataImporter.Logic
                 //  LZ在庫データは取込時に「商品名」カラムを対象外とする
                 _ when fileName.Contains("stock") => $@"LOAD DATA INFILE '{stockDataPath.Replace(@"\", @"\\")}'
                 INTO TABLE dbwrk_lz_stock
-                CHARACTER SET cp932
                 FIELDS TERMINATED BY ','
                 ENCLOSED BY '""'
                 LINES TERMINATED BY '\r\n'
                 IGNORE 1 LINES
                 (
                     ブロックID, ブロック略称, ロケーション,商品ID, @dummy,在庫数_引当数含む, 引当数, 商品予備項目001, 商品予備項目003
-);",
+                );",
 
-                _ when fileName.Contains("backOrders") => $@"SET NAMES cp932; LOAD DATA INFILE '{backOrderPath.Replace(@"\", @"\\")}'
+                _ when fileName.Contains("backOrders") => $@"LOAD DATA INFILE '{backOrderPath.Replace(@"\", @"\\")}'
                 INTO TABLE dbwrk_djnodr_flat
-                CHARACTER SET cp932
                 FIELDS TERMINATED BY ','
                 ENCLOSED BY '""'
                 LINES TERMINATED BY '\r\n' 
@@ -104,5 +109,10 @@ namespace stockDataImporter.Logic
             }
 
         }
-    }
+
+		public Task LoadDataAsync(string tableName, string filePath)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
