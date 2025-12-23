@@ -24,7 +24,7 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// <exception cref="ArgumentNullException">nullの場合のエラー処理</exception>
 		public FtpsClientService(FtpsConnectionInfo connectionInfo)
 		{
-			_connectionInfo = connectionInfo;
+			_connectionInfo = connectionInfo ?? throw new ArgumentNullException(nameof(connectionInfo));
 		}
 
 		/// <summary>
@@ -32,18 +32,23 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		/// <param name="localFilePath">ローカルファイルパス</param
 		/// <param name="connectionInfo">FTPS接続情報</param>
-		public async Task UploadFileAsync(string localFilePath, FtpsConnectionInfo ftpsConnectionInfo)
+		public async Task UploadFileAsync(string localFilePath)
 		{
 			// アップロード処理の実装
-			using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
+			using var client = new AsyncFtpClient(
+			_connectionInfo.Host,
+			_connectionInfo.Username,
+			_connectionInfo.Password,
+			_connectionInfo.Port
+			);
 
-			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;				//	Explicitモードで通信
+			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;              //	Explicitモードで通信
 			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;   //	Passiveモードで通信
 
-            //	証明書を使用しないため強制的にTrue
-            client.Config.ValidateAnyCertificate = true;
+			//	証明書を使用しないため強制的にTrue
+			client.Config.ValidateAnyCertificate = true;
 
-            try
+			try
 			{
 				await client.Connect();
 				string remoteFilePath = Path.Combine(_connectionInfo.RemoteDirectory, Path.GetFileName(localFilePath));
@@ -72,27 +77,27 @@ namespace stockDataImporter.Logic.ImportStockData
 				{
 					await client.Disconnect();
 				}
-			};
+			}
+			;
 		}
 
 		/// <summary>
 		/// 接続テスト処理
 		/// </summary>
-		/// <param name="connectionInfo">FTPS接続情報</param>
 		/// <returns>成功結果</returns>
-		public async Task<bool> TestConnectionAsync(FtpsConnectionInfo connectionInfo)
+		public async Task<bool> TestConnectionAsync()
 		{
-            // 接続テスト処理の実装
-            using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
+			// 接続テスト処理の実装
+			using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
 
-            client.Config.EncryptionMode = FtpEncryptionMode.Explicit;
-            client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
+			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;
+			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
 
 			//	証明書を使用しないため強制的にTrue
 			client.Config.ValidateAnyCertificate = true;
 
 
-            Console.WriteLine($"Testing connection to {_connectionInfo.Host}, {_connectionInfo.RemoteDirectory}");
+			Console.WriteLine($"Testing connection to {_connectionInfo.Host}, {_connectionInfo.RemoteDirectory}");
 
 			try
 			{
@@ -102,7 +107,7 @@ namespace stockDataImporter.Logic.ImportStockData
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"FTPS接続エラー: { ex.Message }");
+				Console.WriteLine($"FTPS接続エラー: {ex.Message}");
 				return false;
 			}
 			finally

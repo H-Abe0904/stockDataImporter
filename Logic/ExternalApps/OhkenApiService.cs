@@ -7,7 +7,7 @@ namespace stockDataImporter.Logic
 
 		public OhkenApiService(string exePath)
 		{
-			_exePath = exePath;
+			_exePath = exePath ?? throw new ArgumentNullException(nameof(exePath));
 		}
 		/// <summary>
 		/// 受注伝票データ取得処理

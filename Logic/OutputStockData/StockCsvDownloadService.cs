@@ -6,25 +6,36 @@ using MySql.Data.MySqlClient;
 
 namespace stockDataImporter.Logic.ImportStockData
 {
-    internal class StockCsvDownload : IStockCsvDownloaderService
+    public class StockCsvDownload : IStockCsvDownloaderService
     {
         private readonly string _connectionString;
-        private readonly string _viewName;
-
+        private readonly StockExportSettings _stockExportSettings;
+        
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="connectionString">FTPS接続情報</param> 
-        public StockCsvDownload(string connectionString)
+        /// <param name="connectionString">DB接続情報</param>
+        /// <param name="stockExportSettings">在庫データ出力設定</param>
+        public StockCsvDownload(string connectionString, StockExportSettings stockExportSettings)
         {
             _connectionString = connectionString;
+            _stockExportSettings = stockExportSettings;
+        }
+
+        /// <summary>
+        /// 在庫CSVダウンロード処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task DownloadStockCsvAsync()
+        {
+            await DownloadAsync(_stockExportSettings.ViewName, _stockExportSettings.ExportFileNameFormat);
         }
 
         /// <summary>
         /// CSVデータ作成要求処理
         /// </summary>
-        /// <param name="viewName"></param>
-        /// <param name="outputFilePath"></param>
+        /// <param name="viewName">MySQLの在庫出力ビューテーブル名</param>
+        /// <param name="outputFilePath">出力先ファイルパス</param>
         /// <returns></returns>
         public async Task DownloadAsync(string viewName, string outputFilePath)
         {
@@ -47,7 +58,6 @@ namespace stockDataImporter.Logic.ImportStockData
             string getStockQuery = $"SELECT 商品コード AS JANCode, 有効在庫数 AS 引当可能数 FROM {viewName}";
 
             await using var cmd = new MySqlCommand(getStockQuery, connection);
-
             using var adapter = new MySqlDataAdapter(cmd);
             var dataTable = new DataTable();
 
@@ -58,8 +68,8 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <summary>
         /// CSV形式に変換処理
         /// </summary>
-        /// <param name="dataTable"></param>
-        /// <param name="outputFilePath"></param>
+        /// <param name="dataTable">在庫データを含むDataTable</param>
+        /// <param name="outputFilePath">出力先ファイルパス</param>
         /// <exception cref="NotImplementedException"></exception>
         private static void Convert2Csv(DataTable dataTable, string outputFilePath)
         {
@@ -95,7 +105,7 @@ namespace stockDataImporter.Logic.ImportStockData
 
         }
 
-		public Task DownloadStockCsvAsync(string downloadUrl, string destinationPath)
+		public Task DownloadStockCsvAsync(string viewName, string destinationPath)
 		{
 			throw new NotImplementedException();
 		}

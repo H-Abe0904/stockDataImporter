@@ -14,8 +14,7 @@ namespace stockDataImporter.Logic
     {
 
         private readonly string _connectionString;
-        private readonly string _filePath;
-        private readonly string _tableName;
+        private readonly ImportPathSettings _importPathSettings;
         /// <summary>
 		/// コンストラクタ
 		/// </summary>
@@ -23,11 +22,10 @@ namespace stockDataImporter.Logic
 		/// <param name="filePath">ファイルパス</param>
 		/// <param name="tableName">テーブル名</param>
 		/// <exception cref="ArgumentNullException">nullの場合のエラー処理</exception>
-        public MySqlDataLoaderService(string connectionString, string filePath, string tableName)
+        public MySqlDataLoaderService(string connectionString, ImportPathSettings importPathSettings)
         {
-            _connectionString = connectionString;
-            _filePath = filePath;
-            _tableName = tableName;
+            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _importPathSettings = importPathSettings ?? throw new ArgumentNullException(nameof(importPathSettings));
         }
 
         /// <summary>
@@ -38,11 +36,17 @@ namespace stockDataImporter.Logic
         /// <exception cref="ArgumentException"></exception>
         public async Task ExecuteQueryAsync(string fileName)
         {
-            //  各ファイルについてはCSV保存ディレクトリを変更予定 12/12
-            string stockDataPath = @"\\cgspider\DataSpiderServista\server\data\DataLink\LogiExp\stock\lzstock.csv";
+            string targetFilePath = fileName switch
+            {
+                //  エラー時用にパスを変数に格納
+                // string stockDataPath = @"\\cgspider\DataSpiderServista\server\data\DataLink\LogiExp\stock\lzstock.csv";
+                // string backOrderPath = @"\\cgspider\DataSpiderServista\server\data\DataLink\DjExp\BKODR\backOrders.csv";
+                _ when fileName.Contains("stock") => _importPathSettings.StockDataPath,
+                _ when fileName.Contains("backOrders") => _importPathSettings.BackOrderPath,
+                _ => throw new ArgumentException($"不明なファイル名: {fileName}"),      // 不明なファイル名の場合のエラー処理
+            };
 
-            string backOrderPath = @"\\cgspider\DataSpiderServista\server\data\DataLink\DjExp\BKODR\backOrders.csv";
-
+            string escapedPath = targetFilePath.Replace(@"\", @"\\");
             await using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
@@ -58,7 +62,7 @@ namespace stockDataImporter.Logic
             string loadQuery = fileName switch
             {
                 //  LZ在庫データは取込時に「商品名」カラムを対象外とする
-                _ when fileName.Contains("stock") => $@"LOAD DATA INFILE '{stockDataPath.Replace(@"\", @"\\")}'
+                _ when fileName.Contains("stock") => $@"LOAD DATA INFILE '{escapedPath}'
                 INTO TABLE dbwrk_lz_stock
                 FIELDS TERMINATED BY ','
                 ENCLOSED BY '""'
@@ -68,7 +72,7 @@ namespace stockDataImporter.Logic
                     ブロックID, ブロック略称, ロケーション,商品ID, @dummy,在庫数_引当数含む, 引当数, 商品予備項目001, 商品予備項目003
                 );",
 
-                _ when fileName.Contains("backOrders") => $@"LOAD DATA INFILE '{backOrderPath.Replace(@"\", @"\\")}'
+                _ when fileName.Contains("backOrders") => $@"LOAD DATA INFILE '{escapedPath}'
                 INTO TABLE dbwrk_djnodr_flat
                 FIELDS TERMINATED BY ','
                 ENCLOSED BY '""'
@@ -79,18 +83,12 @@ namespace stockDataImporter.Logic
             };
 
             // 各テーブルのレコード一括消去
-            await using var truncateCmd = new MySqlCommand(truncateQuery, connection)
-            {
-                CommandType = System.Data.CommandType.Text
-            };
+            await using var truncateCmd = new MySqlCommand(truncateQuery, connection);
             await truncateCmd.ExecuteNonQueryAsync(); // レコード削除実行
 
             // データファイルのロード
-            await using var loadCmd = new MySqlCommand(loadQuery, connection)
-            {
-                CommandType = System.Data.CommandType.Text
-            };
-
+            await using var loadCmd = new MySqlCommand(loadQuery, connection);
+            loadCmd.CommandTimeout = 300; // 5分に延長（デフォルトは30秒）
             //loadCmd.Parameters.AddWithValue("@fileName", Path.Combine(Directory.GetCurrentDirectory(), fileName));  
 
             try
@@ -110,9 +108,9 @@ namespace stockDataImporter.Logic
 
         }
 
-		public Task LoadDataAsync(string tableName, string filePath)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public Task LoadDataAsync(string tableName, string filePath)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

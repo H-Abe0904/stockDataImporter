@@ -57,8 +57,8 @@ namespace stockDataImporter.Logic.Scheduler
 							
 							await _mySqlDataLoaderService.ExecuteQueryAsync("backOrders");
 							await _mySqlDataLoaderService.ExecuteQueryAsync("stock");
-
-							await _stockCsvDownloaderService.
+							await _stockCsvDownloaderService.DownloadStockCsvAsync("vw_stock_output", @"\\chuo3\edi\data\sys\stock_forEC.csv");
+							await _ftpsClientService.UploadFileAsync("stock_forEC.csv");
 		
 						}
 					}

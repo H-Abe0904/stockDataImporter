@@ -7,21 +7,17 @@ using Microsoft.Extensions.Configuration;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using MailKit;
 
 namespace stockDataImporter.Logic.Messaging
 {
-	public class EmailService : IEmailService
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="mailConfig"></param>
+	public class EmailService(MailConfig config) : IEmailService
 	{
-		private readonly IConfiguration _mailConfig;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="mailConfig"></param>
-		public EmailService(IConfiguration mailConfig)
-		{
-			_mailConfig = mailConfig;
-		}
+		private readonly MailConfig _config = config ?? throw new ArgumentNullException(nameof(config));
 
 		/// <summary>
 		/// エラー時メール配信処理
@@ -33,24 +29,24 @@ namespace stockDataImporter.Logic.Messaging
 		/// <exception cref="Exception"></exception>
 		public async Task SendErrorMailAsync(string subject, string body, string? targetAddr = null)
 		{
-			var config = _mailConfig.Get<MailConfig>() ?? throw new Exception("メール設定が読み込めませんでした。");
 			string targetEmail;
 
 			//	第3引数の宛先メールアドレスの判定
-			if (config.AddrListMap != null &&
-			config.AddrListMap.TryGetValue(targetAddr!, out string? MappedAddr) == true)
+			if (!string.IsNullOrEmpty(targetAddr) &&
+			_config.AddrListMap != null &&
+			_config.AddrListMap.TryGetValue(targetAddr, out var MappedAddr))
 			{
-				targetEmail = config.AddrListMap![targetAddr!];
+				targetEmail = MappedAddr;
 			}
 			else
 			{
-				targetEmail = config.ToAddress;
+				targetEmail = _config.ToAddress;
 			}
 
 			//	メール送信内容の定義
 			var message = new MimeMessage();
-			message.From.Add(new MailboxAddress($"{config.FromAddress}", config.FromAddress));	//	メールボックスに表示される差出人名
-			message.To.Add(new MailboxAddress($"{targetEmail}", targetEmail));					//	メールボックスに表示される宛名
+			message.From.Add(new MailboxAddress("エラー通知アドレス", _config.FromAddress));
+			message.To.Add(new MailboxAddress("エラー通知先", targetEmail));
 			message.Subject = subject;
 
 			message.Body = new TextPart("plain")
@@ -66,7 +62,7 @@ namespace stockDataImporter.Logic.Messaging
 				client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
 				//	メールサーバ接続
-				await client.ConnectAsync(config.Host, config.Port,SecureSocketOptions.StartTls);
+				await client.ConnectAsync(config.Host, config.Port, SecureSocketOptions.StartTls);
 
 				//	メールサーバ認証
 				await client.AuthenticateAsync(config.Username, config.Password);
@@ -83,7 +79,6 @@ namespace stockDataImporter.Logic.Messaging
 			{
 				Console.WriteLine($"エラーが発生しました。{ex.Message}");
 			}
-
-	}
+		}
 	}
 }
