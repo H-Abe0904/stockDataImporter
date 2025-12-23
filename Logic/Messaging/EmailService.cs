@@ -15,10 +15,14 @@ namespace stockDataImporter.Logic.Messaging
 	/// 
 	/// </summary>
 	/// <param name="mailConfig"></param>
-	public class EmailService(MailConfig config) : IEmailService
+	public class EmailService : IEmailService
 	{
-		private readonly MailConfig _config = config ?? throw new ArgumentNullException(nameof(config));
+		public EmailService(EmailConfig config)
+		{
+			_config = config ?? throw new ArgumentNullException(nameof(config));
+		}
 
+		private readonly EmailConfig _config = null!;
 		/// <summary>
 		/// エラー時メール配信処理
 		/// </summary>
@@ -62,10 +66,10 @@ namespace stockDataImporter.Logic.Messaging
 				client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
 				//	メールサーバ接続
-				await client.ConnectAsync(config.Host, config.Port, SecureSocketOptions.StartTls);
+				await client.ConnectAsync(_config.Host, _config.Port, SecureSocketOptions.StartTls);
 
 				//	メールサーバ認証
-				await client.AuthenticateAsync(config.Username, config.Password);
+				await client.AuthenticateAsync(_config.Username, _config.Password);
 
 				//	メール送信
 				await client.SendAsync(message);

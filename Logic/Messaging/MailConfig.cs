@@ -3,7 +3,7 @@ namespace stockDataImporter.Logic.Messaging
 	/// <summary>
 	/// メール設定
 	/// </summary>
-	public class MailConfig
+	public class EmailConfig
 	{
 		public required string Host { get; set; }
 		public required string FromAddress { get; set; }

@@ -50,7 +50,7 @@ namespace stockDataImporter
 			var mstPathSettings = config.GetSection("ImportMSTPathSettings").Get<ImportMSTPathSettings>();
 
 			// メール設定情報の取得
-			var mailConfig = config.GetSection("MailConfig").Get<MailConfig>();
+			var mailConfig = config.GetSection("EdiMailConfig").Get<EmailConfig>();
 
 			// 在庫データ出力設定の取得
 			var StockExportSettings = config.GetSection("StockExportSettings").Get<StockExportSettings>();
