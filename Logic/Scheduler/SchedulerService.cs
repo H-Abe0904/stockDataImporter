@@ -11,34 +11,23 @@ namespace stockDataImporter.Logic.Scheduler
 	/// タイマー用スケジューラサービス
 	/// 在庫データ取込みを15分単位で起動させるための登録クラス
 	/// </summary>
-	public class SchedulerService : ISchedulerService
+	public class SchedulerService(IOhkenApiService ohkenApiService,
+		IEmailService emailService,
+		IStockCsvDownloaderService stockCsvDownloaderService,
+		IMySqlDataLoaderService mySqlDataLoaderService,
+		IFtpsClientService ftpsClientService) : ISchedulerService
 	{
-		private readonly IOhkenApiService _ohkenApiService;
-		private readonly IEmailService _emailService;
-		private readonly IFtpsClientService _ftpsClientService;
-		private readonly IStockCsvDownloaderService _stockCsvDownloaderService;
-		private readonly IMySqlDataLoaderService _mySqlDataLoaderService;
-		private readonly PeriodicTimer _timer = new PeriodicTimer(TimeSpan.FromMinutes(15));
-
-		public SchedulerService(IOhkenApiService ohkenApiService,
-			IEmailService emailService,
-			IStockCsvDownloaderService stockCsvDownloaderService,
-			IMySqlDataLoaderService mySqlDataLoaderService,
-			IFtpsClientService ftpsClientService)
-		{
-			_ohkenApiService = ohkenApiService;
-			_emailService = emailService;
-			_ftpsClientService = ftpsClientService;
-			_stockCsvDownloaderService = stockCsvDownloaderService;
-			_mySqlDataLoaderService = mySqlDataLoaderService;
-		}
+		private readonly IOhkenApiService _ohkenApiService = ohkenApiService;
+		private readonly IEmailService _emailService = emailService;
+		private readonly IFtpsClientService _ftpsClientService = ftpsClientService;
+		private readonly IStockCsvDownloaderService _stockCsvDownloaderService = stockCsvDownloaderService;
+		private readonly IMySqlDataLoaderService _mySqlDataLoaderService = mySqlDataLoaderService;
+		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(15));
 
 		/// <summary>
-		/// 販売管理システムの自動実行exeファイルのパス
+		/// 在庫データ出力処理メイン(15分単位での自動作成)
 		/// </summary>
-		public static string exePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Programs\Ohken\HanbaiENTCloud\bin\Ohken.Hanbai.HBRelationKicker.UI.exe";
-
-
+		/// <returns></returns>
 		public async Task StartAsync()
 		{
 			Console.WriteLine($"{DateTime.Now:HH:mm:ss}スケジューラ開始");
@@ -46,27 +35,38 @@ namespace stockDataImporter.Logic.Scheduler
 			{
 				var now = DateTime.Now;
 
-				// 15分単位での在庫データ出力処理
 				try
 				{
-					if (now.Hour >= 7 && now.Hour < 23)
+					// 15分単位での在庫データ出力処理(7時～23時45分まで)
+					if (now.Hour >= 7 && now.Hour <= 23)
 					{
 						if (now.Minute % 15 == 0)
 						{
-							await _ohkenApiService.RunOhkenKickerAsync(exePath);
-							
+							// 受注残CSV書き出し
+							await _ohkenApiService.RunOhkenKickerAsync();
+
+							// 受注残・在庫CSVをDBに取り込み
 							await _mySqlDataLoaderService.ExecuteQueryAsync("backOrders");
 							await _mySqlDataLoaderService.ExecuteQueryAsync("stock");
-							await _stockCsvDownloaderService.DownloadStockCsvAsync("vw_stock_output", @"\\chuo3\edi\data\sys\stock_forEC.csv");
-							await _ftpsClientService.UploadFileAsync("stock_forEC.csv");
-		
+
+							// DBから在庫CSVダウンロード・ECB FTPSアップロード処理
+							await _stockCsvDownloaderService.DownloadStockCsvAsync();
+							// await _ftpsClientService.UploadFileAsync(); 12/23 検証のためコメントアウト
+							
+							// FTPS接続テスト(デバッグ用)
+							await _ftpsClientService.TestConnectionAsync();
 						}
+					}
+					// 毎日2時の定期処理
+					if (now.Hour == 2 && now.Minute == 0)
+					{
+						// 日次処理(毎日0時)
 					}
 				}
 				catch (Exception ex)
 				{
 					Console.WriteLine($"在庫データ取込み処理でエラー発生: {ex.Message}");
-					await _emailService.SendErrorMailAsync("在庫データ取込み処理エラー", ex.Message, "System");
+					await _emailService.SendErrorMailAsync("在庫データ取込み処理エラー", ex.Message, "Debug");
 				}
 			}
 		}

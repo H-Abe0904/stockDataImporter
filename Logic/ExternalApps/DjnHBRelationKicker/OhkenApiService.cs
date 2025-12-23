@@ -28,7 +28,7 @@ namespace stockDataImporter.Logic
 				using var process = Process.Start(app);
 				process?.WaitForExit();
 
-				if(process?.ExitCode != 0)
+				if (process?.ExitCode != 0)
 				{
 					throw new Exception("自動実行ツールが異常終了しました。" + process?.ExitCode);
 				}
@@ -36,7 +36,12 @@ namespace stockDataImporter.Logic
 
 		}
 
-		public Task RunOhkenKickerAsync(string exePath)
+		/// <summary>
+		/// 自動実行ツール起動処理
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		public Task RunOhkenKickerAsync()
 		{
 			throw new NotImplementedException();
 		}

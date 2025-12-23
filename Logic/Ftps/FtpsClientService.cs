@@ -118,5 +118,10 @@ namespace stockDataImporter.Logic.ImportStockData
 				}
 			}
 		}
+
+		public Task UploadFileAsync()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

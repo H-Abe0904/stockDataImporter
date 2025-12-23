@@ -107,10 +107,5 @@ namespace stockDataImporter.Logic
             }
 
         }
-
-        public Task LoadDataAsync(string tableName, string filePath)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
