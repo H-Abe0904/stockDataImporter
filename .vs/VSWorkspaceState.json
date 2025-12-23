@@ -3,10 +3,9 @@
     "",
     "\\Logic",
     "\\Logic\\Database",
-    "\\Logic\\ImportStockData",
     "\\Logic\\Messaging",
-    "\\Logic\\OutputStockData"
+    "\\Logic\\Scheduler"
   ],
-  "SelectedNode": "\\Program.cs",
+  "SelectedNode": "\\Logic\\Scheduler\\SchedulerService.cs",
   "PreviewInSolutionExplorer": false
 }

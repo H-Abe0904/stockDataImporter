@@ -15,6 +15,7 @@ namespace stockDataImporter.Logic.Scheduler
 		IEmailService emailService,
 		IStockCsvDownloaderService stockCsvDownloaderService,
 		IMySqlDataLoaderService mySqlDataLoaderService,
+		IMasterImportService masterImportService,
 		IFtpsClientService ftpsClientService) : ISchedulerService
 	{
 		private readonly IOhkenApiService _ohkenApiService = ohkenApiService;
@@ -22,6 +23,8 @@ namespace stockDataImporter.Logic.Scheduler
 		private readonly IFtpsClientService _ftpsClientService = ftpsClientService;
 		private readonly IStockCsvDownloaderService _stockCsvDownloaderService = stockCsvDownloaderService;
 		private readonly IMySqlDataLoaderService _mySqlDataLoaderService = mySqlDataLoaderService;
+
+		private readonly IMasterImportService _masterImportService = masterImportService;
 		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(15));
 
 		/// <summary>
@@ -58,9 +61,11 @@ namespace stockDataImporter.Logic.Scheduler
 						}
 					}
 					// 毎日2時の定期処理
-					if (now.Hour == 2 && now.Minute == 0)
+					if (now.Hour == 2 && now.Minute == 30)
 					{
 						// 日次処理(毎日0時)
+						await _masterImportService.ImportMasterDataAsync();
+
 					}
 				}
 				catch (Exception ex)
