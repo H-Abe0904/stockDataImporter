@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Common;
+using stockDataImporter.Logic.Messaging;
 
 namespace stockDataImporter.Logic
 {
@@ -15,6 +16,7 @@ namespace stockDataImporter.Logic
 
         private readonly string _connectionString;
         private readonly ImportPathSettings _importPathSettings;
+        private readonly IEmailService _emailService;
         /// <summary>
 		/// コンストラクタ
 		/// </summary>
@@ -22,10 +24,11 @@ namespace stockDataImporter.Logic
 		/// <param name="filePath">ファイルパス</param>
 		/// <param name="tableName">テーブル名</param>
 		/// <exception cref="ArgumentNullException">nullの場合のエラー処理</exception>
-        public MySqlDataLoaderService(string connectionString, ImportPathSettings importPathSettings)
+        public MySqlDataLoaderService(string connectionString, ImportPathSettings importPathSettings, IEmailService emailService)
         {
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
             _importPathSettings = importPathSettings ?? throw new ArgumentNullException(nameof(importPathSettings));
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -97,12 +100,13 @@ namespace stockDataImporter.Logic
                 loadCmd.CommandTimeout = 300; // 5分に延長（デフォルトは30秒）
                 var result = await loadCmd.ExecuteNonQueryAsync();
 
-                Console.WriteLine($"プロシージャ名: '{loadCmd}'は正常に実行されました. 結果: {result}");
+                Console.WriteLine($"{loadCmd}は正常に実行されました. 結果: {result}");
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"データ追加時にエラーが発生しました。 エラー内容: {ex.Message}");
+                await _emailService.SendErrorMailAsync("データ取込エラー", $"データ取込時にエラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
                 throw;
             }
 

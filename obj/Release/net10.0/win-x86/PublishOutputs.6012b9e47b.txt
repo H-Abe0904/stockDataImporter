@@ -1,0 +1,3 @@
+C:\Data\projects\publish\ECB_StockIF.pdb
+C:\Data\projects\publish\appsettings.json
+C:\Data\projects\publish\ECB_StockIF.exe

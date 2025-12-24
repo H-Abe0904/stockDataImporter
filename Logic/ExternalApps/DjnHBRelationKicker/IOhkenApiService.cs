@@ -2,6 +2,6 @@ namespace stockDataImporter.Logic
 {
 	public interface IOhkenApiService
 	{
-		Task RunOhkenKickerAsync();
+		Task FetchBackOrdersAsync();
 	}
 }

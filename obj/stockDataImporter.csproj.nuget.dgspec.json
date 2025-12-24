@@ -8,7 +8,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
-        "projectName": "stockDataImporter",
+        "projectName": "ECB_StockIF",
         "projectPath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
         "packagesPath": "C:\\Users\\h-abe\\.nuget\\packages\\",
         "outputPath": "C:\\Data\\projects\\stockDataImporter\\obj\\",

@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System;
 using stockDataImporter.Logic.ImportStockData;
+using stockDataImporter.Logic.Messaging;
+using stockDataImporter.Logic;
 using FluentFTP;
 
 namespace stockDataImporter.Logic.ImportStockData
@@ -15,16 +17,17 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// FTPS接続情報
 		/// </summary>
 		private readonly FtpsConnectionInfo _connectionInfo;
-
+		private readonly IEmailService _emailService;
 
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="connectionInfo">FTPS接続情報</param>
 		/// <exception cref="ArgumentNullException">nullの場合のエラー処理</exception>
-		public FtpsClientService(FtpsConnectionInfo connectionInfo)
+		public FtpsClientService(FtpsConnectionInfo connectionInfo, IEmailService emailService)
 		{
 			_connectionInfo = connectionInfo ?? throw new ArgumentNullException(nameof(connectionInfo));
+			_emailService = emailService;
 		}
 
 		/// <summary>
@@ -32,7 +35,7 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		/// <param name="localFilePath">ローカルファイルパス</param
 		/// <param name="connectionInfo">FTPS接続情報</param>
-		public async Task UploadFileAsync(string localFilePath)
+		private async Task UploadFileAsync(string localFilePath)
 		{
 			// アップロード処理の実装
 			using var client = new AsyncFtpClient(
@@ -51,7 +54,7 @@ namespace stockDataImporter.Logic.ImportStockData
 			try
 			{
 				await client.Connect();
-				string remoteFilePath = Path.Combine(_connectionInfo.RemoteDirectory, Path.GetFileName(localFilePath));
+				string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, Path.GetFileName(localFilePath));
 
 				var result = await client.UploadFile(localFilePath, remoteFilePath);
 
@@ -63,11 +66,11 @@ namespace stockDataImporter.Logic.ImportStockData
 				{
 					Console.WriteLine($"FTPS: {localFilePath} のアップロードに失敗しました。");
 				}
-
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"FTPS接続/アップロードエラー: {ex.Message}");
+				await _emailService.SendErrorMailAsync("FTPS接続エラー", $"FTPS接続/アップロードエラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
 				throw; // エラーを呼び出し元に伝える
 			}
 			finally
@@ -78,7 +81,6 @@ namespace stockDataImporter.Logic.ImportStockData
 					await client.Disconnect();
 				}
 			}
-			;
 		}
 
 		/// <summary>
@@ -96,18 +98,17 @@ namespace stockDataImporter.Logic.ImportStockData
 			//	証明書を使用しないため強制的にTrue
 			client.Config.ValidateAnyCertificate = true;
 
-
-			Console.WriteLine($"Testing connection to {_connectionInfo.Host}, {_connectionInfo.RemoteDirectory}");
+			Console.WriteLine($"Testing connection to {_connectionInfo.Host}, {_connectionInfo.StockData.RemoteDirectory}");
 
 			try
 			{
-
 				await client.Connect();
 				return client.IsConnected;
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"FTPS接続エラー: {ex.Message}");
+				await _emailService.SendErrorMailAsync("FTPS接続エラー", $"FTPS接続エラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
 				return false;
 			}
 			finally
@@ -119,9 +120,16 @@ namespace stockDataImporter.Logic.ImportStockData
 			}
 		}
 
-		public Task UploadFileAsync()
+		public async Task ExecUploadFileAsync()
 		{
-			throw new NotImplementedException();
+			string localPath = _connectionInfo.StockData.LocalFilePath;
+			string remoteDir = _connectionInfo.StockData.RemoteDirectory;
+
+			if (string.IsNullOrEmpty(localPath))
+			{
+				throw new InvalidOperationException("ローカルパスが設定されていません。");
+			}
+			await UploadFileAsync(localPath);
 		}
 	}
 }

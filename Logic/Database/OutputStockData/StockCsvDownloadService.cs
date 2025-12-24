@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using MySql.Data.MySqlClient;
+using stockDataImporter.Logic.Messaging;
 
 namespace stockDataImporter.Logic.ImportStockData
 {
@@ -10,16 +11,18 @@ namespace stockDataImporter.Logic.ImportStockData
     {
         private readonly string _connectionString;
         private readonly StockExportSettings _stockExportSettings;
-        
+        private readonly IEmailService _emailService;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="connectionString">DB接続情報</param>
         /// <param name="stockExportSettings">在庫データ出力設定</param>
-        public StockCsvDownload(string connectionString, StockExportSettings stockExportSettings)
+        public StockCsvDownload(string connectionString, StockExportSettings stockExportSettings, IEmailService emailService)
         {
             _connectionString = connectionString;
             _stockExportSettings = stockExportSettings;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -28,6 +31,14 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <returns></returns>
         public async Task DownloadStockCsvAsync()
         {
+            if (_stockExportSettings == null)
+                throw new NullReferenceException("_stockExportSettings 自体が注入されていません。");
+
+            if (string.IsNullOrEmpty(_stockExportSettings.ViewName))
+                throw new NullReferenceException("StockExportSettings.ViewName が空です。JSONのキー名を確認してください。");
+
+            if (string.IsNullOrEmpty(_stockExportSettings.ExportFileNameFormat))
+                throw new NullReferenceException("StockExportSettings.ExportFileNameFormat が空です。");
             await DownloadAsync(_stockExportSettings.ViewName, _stockExportSettings.ExportFileNameFormat);
         }
 
@@ -71,7 +82,7 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <param name="dataTable">在庫データを含むDataTable</param>
         /// <param name="outputFilePath">出力先ファイルパス</param>
         /// <exception cref="NotImplementedException"></exception>
-        private static void Convert2Csv(DataTable dataTable, string outputFilePath)
+        private async void Convert2Csv(DataTable dataTable, string outputFilePath)
         {
             var sb = new StringBuilder();
             var header = dataTable.Columns.Cast<DataColumn>()
@@ -82,10 +93,10 @@ namespace stockDataImporter.Logic.ImportStockData
             {
                 var fields = row.ItemArray.Select(field =>
                 {
-                    if (field == null || field == DBNull.Value) return "";
-                    string? fieldString = field?.ToString();
+                    if (field == null || field == DBNull.Value) return "\"\"";
+                    string fieldString = field.ToString() ?? "";
 
-                    return $"\"{fieldString?.Replace("\"", "\"\"")}\"";
+                    return $"\"{fieldString.Replace("\"", "\"\"")}\"";
                 });
 
                 sb.AppendLine(string.Join(",", fields));
@@ -97,17 +108,13 @@ namespace stockDataImporter.Logic.ImportStockData
                 // CSV文字列とファイル書込み処理
                 File.WriteAllText(outputFilePath, sb.ToString(), Encoding.GetEncoding("Shift_JIS"));
             }
-            catch(Exception ex)
-			{
+            catch (Exception ex)
+            {
                 Console.WriteLine($"在庫データCSV書込エラー: {ex.Message}");
+                await _emailService.SendErrorMailAsync("在庫データCSV書込エラー", $"在庫データCSV書込エラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
                 throw;
-			}
+            }
 
         }
-
-		public Task DownloadStockCsvAsync(string viewName, string destinationPath)
-		{
-			throw new NotImplementedException();
-		}
-	}
+    }
 }

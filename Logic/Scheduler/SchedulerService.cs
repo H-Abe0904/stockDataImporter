@@ -23,9 +23,8 @@ namespace stockDataImporter.Logic.Scheduler
 		private readonly IFtpsClientService _ftpsClientService = ftpsClientService;
 		private readonly IStockCsvDownloaderService _stockCsvDownloaderService = stockCsvDownloaderService;
 		private readonly IMySqlDataLoaderService _mySqlDataLoaderService = mySqlDataLoaderService;
-
 		private readonly IMasterImportService _masterImportService = masterImportService;
-		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(15));
+		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(1));
 
 		/// <summary>
 		/// 在庫データ出力処理メイン(15分単位での自動作成)
@@ -33,7 +32,10 @@ namespace stockDataImporter.Logic.Scheduler
 		/// <returns></returns>
 		public async Task StartAsync()
 		{
-			Console.WriteLine($"{DateTime.Now:HH:mm:ss}スケジューラ開始");
+            Console.Clear();
+            Console.WriteLine("========================================================");
+            Console.WriteLine($" バッチ処理開始時刻: {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
+            Console.WriteLine("========================================================");
 			while (await _timer.WaitForNextTickAsync())
 			{
 				var now = DateTime.Now;
@@ -43,35 +45,55 @@ namespace stockDataImporter.Logic.Scheduler
 					// 15分単位での在庫データ出力処理(7時～23時45分まで)
 					if (now.Hour >= 7 && now.Hour <= 23)
 					{
-						if (now.Minute % 15 == 0)
+						//	検証用に5分おきに実行
+						if (now.Minute % 5 == 0)
 						{
-							// 受注残CSV書き出し
-							await _ohkenApiService.RunOhkenKickerAsync();
+                            // 受注残CSV書き出し
+                            Console.WriteLine("-> 受注残データを処理中...");
+                            await _ohkenApiService.FetchBackOrdersAsync();
 
-							// 受注残・在庫CSVをDBに取り込み
-							await _mySqlDataLoaderService.ExecuteQueryAsync("backOrders");
+                            // 受注残・在庫CSVをDBに取り込み
+                            Console.WriteLine("-> データ取込中...");
+                            await _mySqlDataLoaderService.ExecuteQueryAsync("backOrders");
 							await _mySqlDataLoaderService.ExecuteQueryAsync("stock");
 
-							// DBから在庫CSVダウンロード・ECB FTPSアップロード処理
-							await _stockCsvDownloaderService.DownloadStockCsvAsync();
-							// await _ftpsClientService.UploadFileAsync(); 12/23 検証のためコメントアウト
-							
-							// FTPS接続テスト(デバッグ用)
-							await _ftpsClientService.TestConnectionAsync();
-						}
+                            // DBから在庫CSVダウンロード・ECB FTPSアップロード処理
+                            Console.WriteLine("-> 有効在庫データを出力中...");
+                            await _stockCsvDownloaderService.DownloadStockCsvAsync();
+
+
+                            Console.WriteLine("-> FTPサーバーへアップロード中...");
+                            //await _ftpsClientService.ExecUploadFileAsync(); //	12/23 検証のためコメントアウト
+
+                            // FTPS接続テスト(デバッグ用)
+                            await _ftpsClientService.TestConnectionAsync();
+
+                            //	コンソールの情報をクリア
+                            Console.WriteLine("\n3秒後に画面をクリアして待機状態に戻ります...");
+                            await Task.Delay(3000);
+                            Console.Clear();
+                            Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
+                        }
 					}
 					// 毎日2時の定期処理
 					if (now.Hour == 2 && now.Minute == 30)
 					{
 						// 日次処理(毎日0時)
+						Console.WriteLine("-> 商品マスタ更新中...");
 						await _masterImportService.ImportMasterDataAsync();
 
-					}
+                        //	コンソールの情報をクリア
+                        Console.WriteLine("\n3秒後に画面をクリアして待機状態に戻ります...");
+                        await Task.Delay(3000);
+                        Console.Clear();
+                        Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
+
+                    }
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine($"在庫データ取込み処理でエラー発生: {ex.Message}");
-					await _emailService.SendErrorMailAsync("在庫データ取込み処理エラー", ex.Message, "Debug");
+					Console.WriteLine($"在庫データ連携中にエラーが発生しました: {ex.Message}");
+					await _emailService.SendErrorMailAsync("在庫データ連携エラー", $"{ex.InnerException}\n {ex.InnerException?.StackTrace}", "Rocs");
 				}
 			}
 		}

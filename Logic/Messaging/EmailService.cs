@@ -16,22 +16,23 @@ namespace stockDataImporter.Logic.Messaging
 	/// </summary>
 	/// <param name="mailConfig"></param>
 	public class EmailService : IEmailService
+		
 	{
 		public EmailService(EmailConfig config)
 		{
 			_config = config ?? throw new ArgumentNullException(nameof(config));
 		}
 
-		private readonly EmailConfig _config = null!;
-		/// <summary>
-		/// エラー時メール配信処理
-		/// </summary>
-		/// <param name="subject">件名</param>
-		/// <param name="body">本文</param>
-		/// <param name="targetAddr">宛先メールアドレス</param>
-		/// <returns></returns>
-		/// <exception cref="Exception"></exception>
-		public async Task SendErrorMailAsync(string subject, string body, string? targetAddr = null)
+        private readonly EmailConfig _config;
+        /// <summary>
+        /// エラー時メール配信処理
+        /// </summary>
+        /// <param name="subject">件名</param>
+        /// <param name="body">本文</param>
+        /// <param name="targetAddr">宛先メールアドレス</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task SendErrorMailAsync(string subject, string body, string? targetAddr = null)
 		{
 			string targetEmail;
 

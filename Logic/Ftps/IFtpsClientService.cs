@@ -13,7 +13,7 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		/// <param name="localFilePath">ローカルファイルパス</param>
 		/// <param name="connectionInfo">FTPS接続情報</param>
-		Task UploadFileAsync();
+		Task ExecUploadFileAsync();
 
 		/// <summary>
 		/// 接続テスト処理

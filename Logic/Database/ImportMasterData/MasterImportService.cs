@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Common;
+using stockDataImporter.Logic.Messaging;
 
 namespace stockDataImporter.Logic
 {
@@ -13,6 +14,9 @@ namespace stockDataImporter.Logic
 
 		private readonly string _connectionString;
 		private readonly ImportMSTPathSettings _importMSTPathSettings;
+		private readonly IEmailService _emailService;
+
+
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
@@ -20,20 +24,20 @@ namespace stockDataImporter.Logic
 		/// <param name="filePath">ファイルパス</param>
 		/// <param name="tableName">テーブル名</param>
 		/// <exception cref="ArgumentNullException">nullの場合のエラー処理</exception>
-		public MasterImportService(string connectionString, ImportMSTPathSettings importMSTPathSettings)
+		public MasterImportService(string connectionString, ImportMSTPathSettings importMSTPathSettings, IEmailService emailService)
 		{
 			_connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 			_importMSTPathSettings = importMSTPathSettings ?? throw new ArgumentNullException(nameof(importMSTPathSettings));
+			_emailService = emailService;
 		}
 
 		/// <summary>
-		/// マスターデータ取込み処理
+		/// マスタ取込処理
 		/// </summary>
 		/// <returns></returns>
-		/// <exception cref="NotImplementedException"></exception>
-		public Task ImportMasterDataAsync()
+		public async Task ImportMasterDataAsync()
 		{
-			throw new NotImplementedException();
+			await ImportMSTData(_importMSTPathSettings.ImportMSTPath);
 		}
 
 		/// <summary>
@@ -93,6 +97,7 @@ namespace stockDataImporter.Logic
 			catch (Exception ex)
 			{
 				Console.WriteLine($"マスターデータ取込みエラー: {ex.Message}");
+				await _emailService.SendErrorMailAsync("マスタ取込エラー", $"{ex.InnerException}", "Debug");
 			}
 		}
 
