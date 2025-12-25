@@ -42,7 +42,20 @@ namespace stockDataImporter.Logic.ImportStockData
 
             if (string.IsNullOrEmpty(_stockExportSettings.ExportFileNameFormat))
                 throw new NullReferenceException("StockExportSettings.ExportFileNameFormat が空です。");
-            await DownloadAsync(_stockExportSettings.ViewName, outputFilePath);
+            try
+            {
+                Console.WriteLine("在庫CSVダウンロード処理開始");
+                await DownloadAsync(_stockExportSettings.ViewName, outputFilePath);
+                Console.WriteLine("在庫CSVダウンロード処理完了");
+                File.Copy(outputFilePath, _stockExportSettings.CopyTargetDir, true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"在庫CSVダウンロードエラー: {ex.Message}");
+                await _emailService.SendErrorMailAsync("在庫CSVダウンロードエラー", $"在庫CSVダウンロードエラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
+                throw;
+            }
+            
         }
 
         /// <summary>
