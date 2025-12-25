@@ -31,6 +31,9 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <returns></returns>
         public async Task DownloadStockCsvAsync()
         {
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string fileName = $"stock_{timestamp}.csv";
+            string outputFilePath = System.IO.Path.Combine(_stockExportSettings.ExportFileNameFormat, fileName);
             if (_stockExportSettings == null)
                 throw new NullReferenceException("_stockExportSettings 自体が注入されていません。");
 
@@ -39,7 +42,7 @@ namespace stockDataImporter.Logic.ImportStockData
 
             if (string.IsNullOrEmpty(_stockExportSettings.ExportFileNameFormat))
                 throw new NullReferenceException("StockExportSettings.ExportFileNameFormat が空です。");
-            await DownloadAsync(_stockExportSettings.ViewName, _stockExportSettings.ExportFileNameFormat);
+            await DownloadAsync(_stockExportSettings.ViewName, outputFilePath);
         }
 
         /// <summary>

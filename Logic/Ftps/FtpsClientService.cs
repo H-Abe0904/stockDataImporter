@@ -53,8 +53,11 @@ namespace stockDataImporter.Logic.ImportStockData
 
 			try
 			{
+				string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+				string newFileName = $"stock_{timestamp}";
+
 				await client.Connect();
-				string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, Path.GetFileName(localFilePath));
+				string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, newFileName).Replace("\\", "/");
 
 				var result = await client.UploadFile(localFilePath, remoteFilePath);
 
