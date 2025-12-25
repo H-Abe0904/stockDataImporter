@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "SotTnim/4Ds=",
+  "dgSpecHash": "hpW/RZhUVaA=",
   "success": true,
   "projectFilePath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
   "expectedPackageFiles": [
@@ -36,7 +36,7 @@
     {
       "code": "NU1510",
       "level": "Warning",
-      "message": "PackageReference System.Text.Encoding.CodePages will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "message": "PackageReference System.Text.Encoding.CodePages は取り除かれません。このパッケージは不要である可能性があるため、依存関係から削除することを検討してください。",
       "projectPath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
       "warningLevel": 1,
       "filePath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",

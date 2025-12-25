@@ -24,7 +24,7 @@ namespace stockDataImporter.Logic.Scheduler
 		private readonly IStockCsvDownloaderService _stockCsvDownloaderService = stockCsvDownloaderService;
 		private readonly IMySqlDataLoaderService _mySqlDataLoaderService = mySqlDataLoaderService;
 		private readonly IMasterImportService _masterImportService = masterImportService;
-		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(15));
+		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(1));
 
 		/// <summary>
 		/// 在庫データ出力処理メイン(15分単位での自動作成)
