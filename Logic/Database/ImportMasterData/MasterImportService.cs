@@ -37,7 +37,7 @@ namespace stockDataImporter.Logic
 		/// <returns></returns>
 		public async Task ImportMasterDataAsync()
 		{
-			await ImportMSTData(_importMSTPathSettings.ImportMSTPath);
+			await ImportMSTData(_importMSTPathSettings.ItemMasterPath);
 		}
 
 		/// <summary>
@@ -53,7 +53,7 @@ namespace stockDataImporter.Logic
 			// 取込ファイルパスの判定
 			string targetFilePath = filePath switch
 			{
-				_ when filePath.Contains("商品マスタ") => _importMSTPathSettings.ImportMSTPath,
+				_ when filePath.Contains("商品マスタ") => _importMSTPathSettings.ItemMasterPath,
 				_ => throw new ArgumentException($"不明なファイル名: {filePath}"),      // 不明なファイル名の場合のエラー処理
 			};
 
@@ -63,16 +63,16 @@ namespace stockDataImporter.Logic
 
 			// ファイル名に基づいて適切なテーブルのレコードを削除し、
 			// データをロードするクエリを選択
-			string truncateQuery = filePath switch
+			string truncateQuery = escapedPath switch
 			{
-				_ when filePath.Contains("商品マスタ") => "TRUNCATE TABLE dbmst_djn_products",
-				_ => throw new ArgumentException($"不明なファイル名: {filePath}"),      // 不明なファイル名の場合のエラー処理
+				_ when escapedPath.Contains("商品マスタ") => "TRUNCATE TABLE dbmst_djn_products",
+				_ => throw new ArgumentException($"不明なファイル名: {escapedPath}"),      // 不明なファイル名の場合のエラー処理
 			};
 
 			// マスターデータ取込みクエリ実行
-			string loadDataQuery = filePath switch
+			string loadDataQuery = escapedPath switch
 			{
-				_ when filePath.Contains("商品マスタ") => $@"
+				_ when escapedPath.Contains("商品マスタ") => $@"
 				LOAD DATA LOCAL INFILE '{escapedPath}'
 				INTO TABLE dbmst_djn_products
 				CHARACTER SET cp932
@@ -80,7 +80,7 @@ namespace stockDataImporter.Logic
 				ENCLOSED BY '""'
 				LINES TERMINATED BY '\r\n'
 				IGNORE 1 LINES;",
-				_ => throw new ArgumentException($"不明なファイル名: {filePath}"),      // 不明なファイル名の場合のエラー処理
+				_ => throw new ArgumentException($"不明なファイル名: {escapedPath}"),      // 不明なファイル名の場合のエラー処理
 			};
 
 			await using var truncateCmd = new MySqlCommand(truncateQuery, connection);

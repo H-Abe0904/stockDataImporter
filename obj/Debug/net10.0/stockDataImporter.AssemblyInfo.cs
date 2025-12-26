@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ECB_StockIF")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c881e2445eb0a904d3700c4022666f65ab2ecc6f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e49651e9af2094184651401cdbcd007d86b45ca6")]
 [assembly: System.Reflection.AssemblyProductAttribute("ECB_StockIF")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ECB_StockIF")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

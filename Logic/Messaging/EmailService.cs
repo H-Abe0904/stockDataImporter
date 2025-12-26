@@ -51,7 +51,7 @@ namespace stockDataImporter.Logic.Messaging
 			//	メール送信内容の定義
 			var message = new MimeMessage();
 			message.From.Add(new MailboxAddress(_config.FromAddress, _config.FromAddress));
-			message.To.Add(new MailboxAddress(_config.FromAddress, targetEmail));
+			message.To.Add(new MailboxAddress(_config.ToAddress, targetEmail));
 			message.Subject = subject;
 
 			message.Body = new TextPart("plain")

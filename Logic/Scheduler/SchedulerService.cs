@@ -67,6 +67,9 @@ namespace stockDataImporter.Logic.Scheduler
 							// FTPS接続テスト(デバッグ用)
 							await _ftpsClientService.TestConnectionAsync();
 
+							//	成功報告メールを送信
+							await _emailService.SendErrorMailAsync("在庫データ連携成功", "在庫データ連携が正常に完了しました。", "Debug");
+
 							//	コンソールの情報をクリア
 							Console.WriteLine("\n3秒後に画面をクリアして待機状態に戻ります...");
 							await Task.Delay(3000);
@@ -74,7 +77,7 @@ namespace stockDataImporter.Logic.Scheduler
 							Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
 						}
 					}
-					// 毎日2時の定期処理
+					// 毎日2時半の定期処理
 					if (now.Hour == 2 && now.Minute == 30)
 					{
 						// 日次処理(毎日0時)
