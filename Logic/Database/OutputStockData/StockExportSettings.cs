@@ -7,4 +7,10 @@ namespace stockDataImporter.Logic.ImportStockData
 		public string ExportFileNameFormat { get; set; } = string.Empty;
 		public string CopyTargetDir { get; set; } = string.Empty;
 	}
+	public class CopyStockDataSettings
+	{
+		public string SourceFilePath { get; set; } = string.Empty;
+		public string AscensusPath { get; set; } = string.Empty;
+		public string CustomerPath { get; set; } = string.Empty;
+	}
 }
