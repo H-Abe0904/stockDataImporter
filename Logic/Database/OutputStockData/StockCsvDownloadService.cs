@@ -11,6 +11,7 @@ namespace stockDataImporter.Logic.ImportStockData
     {
         private readonly string _connectionString;
         private readonly StockExportSettings _stockExportSettings;
+        private readonly CopyStockDataSettings _copyStockDataSettings;
         private readonly IEmailService _emailService;
 
         /// <summary>
@@ -18,10 +19,11 @@ namespace stockDataImporter.Logic.ImportStockData
         /// </summary>
         /// <param name="connectionString">DB接続情報</param>
         /// <param name="stockExportSettings">在庫データ出力設定</param>
-        public StockCsvDownload(string connectionString, StockExportSettings stockExportSettings, IEmailService emailService)
+        public StockCsvDownload(string connectionString, StockExportSettings stockExportSettings, IEmailService emailService, CopyStockDataSettings copyStockDataSettings)
         {
             _connectionString = connectionString;
             _stockExportSettings = stockExportSettings;
+            _copyStockDataSettings = copyStockDataSettings;
             _emailService = emailService;
         }
 
@@ -47,7 +49,11 @@ namespace stockDataImporter.Logic.ImportStockData
                 Console.WriteLine("在庫CSVダウンロード処理開始");
                 await DownloadAsync(_stockExportSettings.ViewName, outputFilePath);
                 Console.WriteLine("在庫CSVダウンロード処理完了");
-                File.Copy(outputFilePath, _stockExportSettings.CopyTargetDir, true);
+
+                // コピー先へファイルをコピー(上書き保存)
+                File.Copy(outputFilePath, _stockExportSettings.CopyTargetDir, true);    // \\chuo3\edi\data\sys\stock_forEC.csv
+                // File.Copy(outputFilePath, _copyStockDataSettings.AscensusPath, true);   // F:\中央漁具株式会社 Dropbox\中央漁具EDI\000008_アシェンサスジャパン\stock.csv
+                // File.Copy(outputFilePath, _copyStockDataSettings.CustomerPath, true);   // \\chuo3\edi\data\sys\djn_stock_forCustomer.csv
             }
             catch (Exception ex)
             {
