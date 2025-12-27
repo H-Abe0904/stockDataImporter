@@ -67,7 +67,7 @@ namespace stockDataImporter.Logic.Scheduler
 			if (currentTime >= new TimeSpan(7, 8, 0) && currentTime <= new TimeSpan(23, 38, 0))
 			{
 				// デバッグ時はここを書換えて1~5分毎に動作させる
-				if (now.Minute % 15 == 5)   // 毎時 8, 23, 38, 53分に判定
+				if (now.Minute % 15 == 8)   // 毎時 8, 23, 38, 53分に判定
 				{
 					// 受注残CSV書き出し
 					Console.WriteLine("-> 受注残データを処理中...");
@@ -103,10 +103,9 @@ namespace stockDataImporter.Logic.Scheduler
 		{
 			var now = DateTime.Now;
 			var currentTime = now.TimeOfDay;
-			if (currentTime >= new TimeSpan(7, 8, 0) && currentTime <= new TimeSpan(23, 38, 0))
+			if (currentTime >= new TimeSpan(7, 10, 0) || currentTime <= new TimeSpan(19, 10, 0))
 			{
-				if (now.Minute % 1 == 0)
-				{
+
 					await _stockCsvDownloaderService.ExecBySettings("Customer");
 					await _emailService.SendErrorMailAsync("A在庫データ連携成功", "在庫データ連携が正常に完了しました。", "Debug");
 
@@ -115,7 +114,7 @@ namespace stockDataImporter.Logic.Scheduler
 					await Task.Delay(3000);
 					Console.Clear();
 					Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
-				}
+				
 			}
 
 		}
@@ -137,7 +136,7 @@ namespace stockDataImporter.Logic.Scheduler
 				try
 				{
 					await UPD_ProductMST(); // 商品マスタ更新処理
-					//await ECB_StockIF();    // 在庫データ出力処理
+					await ECB_StockIF();    // 在庫データ出力処理
 					await DL_Stock_ForCustomer();
 
                 }

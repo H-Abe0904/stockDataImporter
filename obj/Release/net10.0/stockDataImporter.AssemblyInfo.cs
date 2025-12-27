@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ECB_StockIF")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+67fb4459e85547ce857fa3d02c96edb38f335139")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1f5f7d2b52f4082abb792e434bf881e09be1923d")]
 [assembly: System.Reflection.AssemblyProductAttribute("ECB_StockIF")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ECB_StockIF")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
