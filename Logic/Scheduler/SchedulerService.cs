@@ -29,12 +29,13 @@ namespace stockDataImporter.Logic.Scheduler
 		private readonly IMySqlDataLoaderService _mySqlDataLoaderService = mySqlDataLoaderService;
 		private readonly IMasterImportService _masterImportService = masterImportService;
 		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(1));
+        private DateTime? _lastProcessedTime = null;
 
-		/// <summary>
-		/// 商品マスタ更新処理メイン(毎日2:30に自動作成)
-		/// </summary>
-		/// <returns></returns>
-		public async Task UPD_ProductMST()
+        /// <summary>
+        /// 商品マスタ更新処理メイン(毎日2:30に自動作成)
+        /// </summary>
+        /// <returns></returns>
+        public async Task UPD_ProductMST()
 		{
 			var now = DateTime.Now;
 			var currentTime = now.TimeOfDay;
@@ -102,18 +103,30 @@ namespace stockDataImporter.Logic.Scheduler
 		public async Task DL_Stock_ForCustomer()
 		{
 			var now = DateTime.Now;
-			var currentTime = now.TimeOfDay;
-			if (currentTime >= new TimeSpan(7, 10, 0) || currentTime <= new TimeSpan(19, 10, 0))
-			{
 
-					await _stockCsvDownloaderService.ExecBySettings("Customer");
-					await _emailService.SendErrorMailAsync("A在庫データ連携成功", "在庫データ連携が正常に完了しました。", "Debug");
+			var currentTime = now.TimeOfDay;
+            bool isTargetTime = (now.Hour == 7 || now.Hour == 19) && (now.Minute == 10);
+
+            // 2. 同じ「分」に二度実行しないためのチェック
+            // （最後に実行した時刻が現在と同じ「時分」ならスキップ）
+            bool alreadyRun = _lastProcessedTime.HasValue &&
+                              _lastProcessedTime.Value.Hour == now.Hour &&
+                              _lastProcessedTime.Value.Minute == now.Minute &&
+                              _lastProcessedTime.Value.Date == now.Date;
+
+            if (isTargetTime && !alreadyRun)
+
+            {
+				//	二重実行防止
+                _lastProcessedTime = now;
+                await _stockCsvDownloaderService.ExecBySettings("Customer");
+					await _emailService.SendErrorMailAsync("得意先向け在庫データ連携成功", "在庫データ連携が正常に完了しました。", "Debug");
 
 					//	コンソールの情報をクリア
 					Console.WriteLine("\n3秒後に画面をクリアして待機状態に戻ります...");
 					await Task.Delay(3000);
 					Console.Clear();
-					Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
+					//Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
 				
 			}
 
