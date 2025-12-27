@@ -53,12 +53,11 @@ namespace stockDataImporter.Logic.ImportStockData
 
 			try
 			{
-				string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-				string newFileName = $"stock_{timestamp}";
+				string fileName = Path.GetFileName(_connectionInfo.StockData.LocalFilePath);
+				string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, fileName).Replace("\\", "/");
 
 				await client.Connect();
-				string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, newFileName).Replace("\\", "/");
-
+				// string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, fileName).Replace("\\", "/");
 				var result = await client.UploadFile(localFilePath, remoteFilePath);
 
 				if (result == FtpStatus.Success)
@@ -102,7 +101,8 @@ namespace stockDataImporter.Logic.ImportStockData
 			client.Config.ValidateAnyCertificate = true;
 
 			Console.WriteLine($"Testing connection to {_connectionInfo.Host}, {_connectionInfo.StockData.RemoteDirectory}");
-
+			string fileName = Path.GetFileName(_connectionInfo.StockData.LocalFilePath);
+				string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, fileName).Replace("\\", "/");
 			try
 			{
 				await client.Connect();

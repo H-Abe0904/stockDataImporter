@@ -53,7 +53,11 @@ namespace stockDataImporter
 			var mailConfig = config.GetSection("EdiMailConfig").Get<EmailConfig>();
 
 			// 在庫データ出力設定の取得
-			var StockExportSettings = config.GetSection("StockDataExportSettings").Get<StockExportSettings>();
+			var StockExportSettings = new StockExportSettings
+			{
+				StockEcDataExportSettings = config.GetSection("StockEcDataExportSettings").Get<ExportConfig>() ?? new ExportConfig(),
+				CustomerStockDataExportSettings = config.GetSection("CustomerStockDataExportSettings").Get<ExportConfig>() ?? new ExportConfig()
+			};
 
 			// FTPS接続情報の取得
 			var FtpsConnectionInfo = config.GetSection("FtpsConnectionInfo").Get<FtpsConnectionInfo>();
@@ -63,14 +67,14 @@ namespace stockDataImporter
 			var emailService = new EmailService(mailConfig!);
 			var dataLoader = new MySqlDataLoaderService(connString!, pathSettings!, emailService!);
 			var masterImportService = new MasterImportService(connString!, mstPathSettings!,emailService!);
-			var stockCsvDownloader = new StockCsvDownload(connString!, StockExportSettings!, emailService);
+			var stockCsvDownloader = new StockCsvDownload(connString!, StockExportSettings!, emailService, pathSettings!);
 			var ftpsClientService = new FtpsClientService(FtpsConnectionInfo!, emailService!);
 
 			// スケジューラサービスの初期化・開始
 			var schedulerService = new SchedulerService(
 				ohkenApiService,
 				emailService,
-				stockCsvDownloader,
+				stockCsvDownloader,	
 				dataLoader,
 				masterImportService,			
 				ftpsClientService);
