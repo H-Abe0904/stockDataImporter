@@ -1,32 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj": {}
+    "/Volumes/Crucial_X8/Projects/stockDataImporter/stockDataImporter.csproj": {}
   },
   "projects": {
-    "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj": {
+    "/Volumes/Crucial_X8/Projects/stockDataImporter/stockDataImporter.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
+        "projectUniqueName": "/Volumes/Crucial_X8/Projects/stockDataImporter/stockDataImporter.csproj",
         "projectName": "ECB_StockIF",
-        "projectPath": "C:\\Data\\projects\\stockDataImporter\\stockDataImporter.csproj",
-        "packagesPath": "C:\\Users\\h-abe\\.nuget\\packages\\",
-        "outputPath": "C:\\Data\\projects\\stockDataImporter\\obj\\",
+        "projectPath": "/Volumes/Crucial_X8/Projects/stockDataImporter/stockDataImporter.csproj",
+        "packagesPath": "/Users/sakura/.nuget/packages/",
+        "outputPath": "/Volumes/Crucial_X8/Projects/stockDataImporter/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\h-abe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/sakura/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -100,7 +93,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.101/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
