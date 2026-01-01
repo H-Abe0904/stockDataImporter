@@ -59,6 +59,10 @@ namespace stockDataImporter
 				CustomerStockDataExportSettings = config.GetSection("CustomerStockDataExportSettings").Get<ExportConfig>() ?? new ExportConfig()
 			};
 
+			//	CSVファイルコピー先情報の設定
+			var copyStockDataSettings = config.GetSection("CopyStockDataSettings").Get<CopyStockDataSettings>()
+		?? new CopyStockDataSettings();
+
 			// FTPS接続情報の取得
 			var FtpsConnectionInfo = config.GetSection("FtpsConnectionInfo").Get<FtpsConnectionInfo>();
 
@@ -66,17 +70,17 @@ namespace stockDataImporter
 			var ohkenApiService = new OhkenApiService(exePath);
 			var emailService = new EmailService(mailConfig!);
 			var dataLoader = new MySqlDataLoaderService(connString!, pathSettings!, emailService!);
-			var masterImportService = new MasterImportService(connString!, mstPathSettings!,emailService!);
-			var stockCsvDownloader = new StockCsvDownload(connString!, StockExportSettings!, emailService, pathSettings!);
+			var masterImportService = new MasterImportService(connString!, mstPathSettings!, emailService!);
+			var stockCsvDownloader = new StockCsvDownload(connString!, StockExportSettings!, emailService, copyStockDataSettings!);
 			var ftpsClientService = new FtpsClientService(FtpsConnectionInfo!, emailService!);
 
 			// スケジューラサービスの初期化・開始
 			var schedulerService = new SchedulerService(
 				ohkenApiService,
 				emailService,
-				stockCsvDownloader,	
+				stockCsvDownloader,
 				dataLoader,
-				masterImportService,			
+				masterImportService,
 				ftpsClientService);
 			await schedulerService.StartAsync();
 		}
