@@ -48,54 +48,55 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <param name="label">ラベル</param>
         /// <returns>ラベルに応じた在庫CSVファイル</returns>
         /// <exception cref="ArgumentNullException"></exception>
-public async Task<string> ExecBySettings(string label)
-{
-    // 1. ラベルに応じて使う設定（View名や保存先）を切り替える
-    var config = label == "EC"
-        ? _stockExportSettings.StockEcDataExportSettings
-        : _stockExportSettings.CustomerStockDataExportSettings;
+        public async Task<string> ExecBySettings(string label)
+        {
+            // 1. ラベルに応じて使う設定（View名や保存先）を切り替える
+            var config = label == "EC"
+                ? _stockExportSettings.StockEcDataExportSettings
+                : _stockExportSettings.CustomerStockDataExportSettings;
 
-    // 2. 設定が読み込めているかチェック
-    if (config == null || string.IsNullOrEmpty(config.ViewName))
-    {
-        Console.WriteLine($"【エラー】{label}向けの設定が読み込めません。クラス名を確認してください。");
-    }
+            // 2. 設定が読み込めているかチェック
+            if (config == null || string.IsNullOrEmpty(config.ViewName))
+            {
+                Console.WriteLine($"【エラー】{label}向けの設定が読み込めません。クラス名を確認してください。");
+            }
 
-    string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-    string fileName = label == "EC" ? $"stock_{timestamp}.csv" : "stock.csv";
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string fileName = label == "EC" ? $"stock_{timestamp}.csv" : "stock.csv";
 
-    // 3. 保存先のフォルダが存在するか確認し、なければ作成する
-    if (!Directory.Exists(config!.ExportFileNameFormat))
-    {
-        Console.WriteLine($"フォルダ作成: {config.ExportFileNameFormat}");
-        Directory.CreateDirectory(config.ExportFileNameFormat);
-    }
+            // 3. 保存先のフォルダが存在するか確認し、なければ作成する
+            if (!Directory.Exists(config!.ExportFileNameFormat))
+            {
+                Console.WriteLine($"フォルダ作成: {config.ExportFileNameFormat}");
+                Directory.CreateDirectory(config.ExportFileNameFormat);
+            }
 
-    // 4. ファイルのフルパスを組み立てる
-    string outputFilePath = Path.Combine(config.ExportFileNameFormat, fileName);
+            // 4. ファイルのフルパスを組み立てる
+            string outputFilePath = Path.Combine(config.ExportFileNameFormat, fileName);
 
-    Console.WriteLine($"{label}向けCSV出力開始 -> View: {config.ViewName}");
+            Console.WriteLine($"{label}向けCSV出力開始 -> View: {config.ViewName}");
 
-    try 
-    {
-        // 5. データを取得してCSVとして保存
-        await DownloadAsync(config.ViewName, outputFilePath);
-        Console.WriteLine($"{label}向けCSV保存成功: {outputFilePath}");
+            try
+            {
+                // 5. データを取得してCSVとして保存
+                await DownloadAsync(config.ViewName, outputFilePath);
+                Console.WriteLine($"{label}向けCSV保存成功: {outputFilePath}");
 
-        //  ECB
-        if (label == "EC" && !string.IsNullOrEmpty(config.CopyTargetDir))
+                //  ECB向けCSVファイルのコピー先ディレクトリの指定
+                if (label == "EC" && !string.IsNullOrEmpty(config.CopyTargetDir))
                 {
                     string copy2Path = _copyStockDataSettings.SourceFilePath;
                     File.Copy(outputFilePath, copy2Path, true);
                 }
-        return outputFilePath;
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"{label}向けCSV保存失敗: {ex.Message}");
-        throw;
-    }
-}
+
+                return outputFilePath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{label}向けCSV保存失敗: {ex.Message}");
+                throw;
+            }
+        }
 
         /// <summary>
         /// CSVデータ作成要求処理
