@@ -6,6 +6,7 @@ using Microsoft.VisualBasic;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1;
 using stockDataImporter.Logic.Messaging;
+using stockDataImporter.Logic.ImportStockData;
 using static stockDataImporter.Logic.ImportStockData.StockExportSettings;
 
 namespace stockDataImporter.Logic.ImportStockData
@@ -14,7 +15,7 @@ namespace stockDataImporter.Logic.ImportStockData
     {
         private readonly string _connectionString;
         private readonly StockExportSettings _stockExportSettings;
-        private readonly ImportPathSettings _copyStockDataSettings;
+        private readonly CopyStockDataSettings _copyStockDataSettings;
         private readonly IEmailService _emailService;
 
         /// <summary>
@@ -22,7 +23,7 @@ namespace stockDataImporter.Logic.ImportStockData
         /// </summary>
         /// <param name="connectionString">DB接続情報</param>
         /// <param name="stockExportSettings">在庫データ出力設定</param>
-        public StockCsvDownload(string connectionString, StockExportSettings stockExportSettings, IEmailService emailService, ImportPathSettings copyStockDataSettings)
+        public StockCsvDownload(string connectionString, StockExportSettings stockExportSettings, IEmailService emailService, CopyStockDataSettings copyStockDataSettings)
         {
             _connectionString = connectionString;
             _stockExportSettings = stockExportSettings;
@@ -80,6 +81,13 @@ public async Task<string> ExecBySettings(string label)
         // 5. データを取得してCSVとして保存
         await DownloadAsync(config.ViewName, outputFilePath);
         Console.WriteLine($"{label}向けCSV保存成功: {outputFilePath}");
+
+        //  ECB
+        if (label == "EC" && !string.IsNullOrEmpty(config.CopyTargetDir))
+                {
+                    string copy2Path = _copyStockDataSettings.SourceFilePath;
+                    File.Copy(outputFilePath, copy2Path, true);
+                }
         return outputFilePath;
     }
     catch (Exception ex)
