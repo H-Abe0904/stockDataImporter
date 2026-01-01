@@ -81,13 +81,13 @@ namespace stockDataImporter.Logic.Scheduler
 
 					// DBから在庫CSVダウンロード・ECB FTPSアップロード処理
 					Console.WriteLine("-> 有効在庫データを出力中...");
-					await _stockCsvDownloaderService.ExecBySettings("EC");
+					string createdFilePath = await _stockCsvDownloaderService.ExecBySettings("EC");
 
 					Console.WriteLine("-> FTPサーバーへアップロード中...");
-					//await _ftpsClientService.ExecUploadFileAsync(); //	12/23 検証のためコメントアウト
+					// await _ftpsClientService.ExecUploadFileAsync(createdFilePath); //	12/23 検証のためコメントアウト
 
 					// FTPS接続テスト(デバッグ用)
-					await _ftpsClientService.TestConnectionAsync();
+					await _ftpsClientService.TestConnectionAsync(createdFilePath);
 
 					//	成功報告メールを送信
 					await _emailService.SendErrorMailAsync("在庫データ連携成功", "在庫データ連携が正常に完了しました。", "Debug");

@@ -47,7 +47,7 @@ namespace stockDataImporter.Logic.ImportStockData
         /// <param name="label">ラベル</param>
         /// <returns>ラベルに応じた在庫CSVファイル</returns>
         /// <exception cref="ArgumentNullException"></exception>
-public async Task ExecBySettings(string label)
+public async Task<string> ExecBySettings(string label)
 {
     // 1. ラベルに応じて使う設定（View名や保存先）を切り替える
     var config = label == "EC"
@@ -58,14 +58,13 @@ public async Task ExecBySettings(string label)
     if (config == null || string.IsNullOrEmpty(config.ViewName))
     {
         Console.WriteLine($"【エラー】{label}向けの設定が読み込めません。クラス名を確認してください。");
-        return; 
     }
 
     string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
     string fileName = label == "EC" ? $"stock_{timestamp}.csv" : "stock.csv";
 
     // 3. 保存先のフォルダが存在するか確認し、なければ作成する
-    if (!Directory.Exists(config.ExportFileNameFormat))
+    if (!Directory.Exists(config!.ExportFileNameFormat))
     {
         Console.WriteLine($"フォルダ作成: {config.ExportFileNameFormat}");
         Directory.CreateDirectory(config.ExportFileNameFormat);
@@ -81,10 +80,12 @@ public async Task ExecBySettings(string label)
         // 5. データを取得してCSVとして保存
         await DownloadAsync(config.ViewName, outputFilePath);
         Console.WriteLine($"{label}向けCSV保存成功: {outputFilePath}");
+        return outputFilePath;
     }
     catch (Exception ex)
     {
         Console.WriteLine($"{label}向けCSV保存失敗: {ex.Message}");
+        throw;
     }
 }
 

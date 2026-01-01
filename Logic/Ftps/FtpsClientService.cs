@@ -35,7 +35,7 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// </summary>
 		/// <param name="localFilePath">ローカルファイルパス</param
 		/// <param name="connectionInfo">FTPS接続情報</param>
-		private async Task UploadFileAsync(string localFilePath)
+		public async Task UploadFileAsync(string localFilePath)
 		{
 			// アップロード処理の実装
 			using var client = new AsyncFtpClient(
@@ -53,7 +53,7 @@ namespace stockDataImporter.Logic.ImportStockData
 
 			try
 			{
-				string fileName = Path.GetFileName(_connectionInfo.StockData.LocalFilePath);
+				string fileName = Path.GetFileName(localFilePath);  //	StockCsvDownloadServiceで生成したファイル名を使用
 				string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, fileName).Replace("\\", "/");
 
 				await client.Connect();
@@ -89,11 +89,15 @@ namespace stockDataImporter.Logic.ImportStockData
 		/// 接続テスト処理
 		/// </summary>
 		/// <returns>成功結果</returns>
-		public async Task<bool> TestConnectionAsync()
+		public async Task<bool> TestConnectionAsync(string? localFilePath = null)
 		{
+			//	ファイルアップロード処理デバッグ用(引数がnullならJSON読み込み)
+			string pathForTest = localFilePath ?? _connectionInfo.StockData.LocalFilePath;
+
 			// 接続テスト処理の実装
 			using var client = new AsyncFtpClient(_connectionInfo.Host, _connectionInfo.Username, _connectionInfo.Password, _connectionInfo.Port);
 
+			//	指定された接続形式を設定
 			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;
 			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
 
@@ -101,38 +105,52 @@ namespace stockDataImporter.Logic.ImportStockData
 			client.Config.ValidateAnyCertificate = true;
 
 			Console.WriteLine($"Testing connection to {_connectionInfo.Host}, {_connectionInfo.StockData.RemoteDirectory}");
-			string fileName = Path.GetFileName(_connectionInfo.StockData.LocalFilePath);
-				string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, fileName).Replace("\\", "/");
+
+			string fileName = Path.GetFileName(pathForTest);
+			string remoteFilePath = Path.Combine(_connectionInfo.StockData.RemoteDirectory, fileName).Replace("\\", "/");
 			try
 			{
 				await client.Connect();
+				Console.WriteLine($"Debug: {fileName}");
+
 				return client.IsConnected;
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"FTPS接続エラー: {ex.Message}");
-				await _emailService.SendErrorMailAsync("FTPS接続エラー", $"FTPS接続エラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
+				await _emailService.SendErrorMailAsync("FTPS接続テストエラー", $"FTPS接続エラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
 				return false;
 			}
 			finally
 			{
-				if (client.IsConnected)
-				{
-					await client.Disconnect();
-				}
+				if (client.IsConnected)	await client.Disconnect();
+				
 			}
 		}
 
-		public async Task ExecUploadFileAsync()
+		/// <summary>
+		/// FTPサーバへのアップロード処理
+		/// </summary>
+		/// <param name="localPath">CSVファイルのローカルファイルパス</param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">パス設定エラー時の処理</exception>
+		/// <exception cref="FileNotFoundException">ファイルが見つからなかった際の処理</exception>
+		public async Task ExecUploadFileAsync(string? localPath = null)
 		{
-			string localPath = _connectionInfo.StockData.LocalFilePath;
+			string path = !string.IsNullOrEmpty(localPath)
+			? localPath
+			: _connectionInfo.StockData.LocalFilePath;
 			string remoteDir = _connectionInfo.StockData.RemoteDirectory;
 
-			if (string.IsNullOrEmpty(localPath))
+			if (string.IsNullOrEmpty(path))
 			{
 				throw new InvalidOperationException("ローカルパスが設定されていません。");
 			}
-			await UploadFileAsync(localPath);
+			if (!File.Exists(path))
+			{
+				throw new FileNotFoundException($"アップロード対象のファイルがありません: {path}");
+			}
+			await UploadFileAsync(path);
 		}
 	}
 }

@@ -4,6 +4,6 @@ namespace stockDataImporter.Logic.ImportStockData
 	{
 		// クラス側の実装に合わせて名前を統一
         Task DL_AllStockCsv();
-		Task ExecBySettings(string label);
+		Task<string> ExecBySettings(string label);
 	}
 }
