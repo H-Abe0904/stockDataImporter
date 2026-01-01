@@ -112,6 +112,7 @@ namespace stockDataImporter.Logic.ImportStockData
 			{
 				await client.Connect();
 				Console.WriteLine($"Debug: {fileName}");
+				await _emailService.SendErrorMailAsync($"デバッグ: {fileName}", $"デバッグ: {fileName}", "Debug");
 
 				return client.IsConnected;
 			}
