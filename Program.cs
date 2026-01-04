@@ -8,19 +8,21 @@ using stockDataImporter.Logic.Scheduler;
 using stockDataImporter.Logic;
 using System.Configuration;
 using System.Reflection;
+using Org.BouncyCastle.Crypto.Prng;
 
 namespace stockDataImporter
 {
 	internal class Program
 	{
-		/// <summary>
-		/// メインエントリポイント
-		/// </summary>
-		/// <param name="args"></param>
-		/// <returns></returns>
-		static async Task Main()
+		private const string MutexName = @"Global\stockDataImporter";
+		private const int MaxRetryCount = 3;
+		private const int RetryIntervalMs = 5000;
+		private static IStockCsvDownloaderService? _stockCsvDownloader;
+		private static IFtpsClientService? _ftpsClientService;
+		private static IEmailService? _emailService;
+		private static ISchedulerService? _schedulerService;
+		static async Task Init()
 		{
-
 			// 文字コード (Shift_JISなど) を扱うための準備
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -68,21 +70,99 @@ namespace stockDataImporter
 
 			// サービス初期化
 			var ohkenApiService = new OhkenApiService(exePath);
-			var emailService = new EmailService(mailConfig!);
-			var dataLoader = new MySqlDataLoaderService(connString!, pathSettings!, emailService!);
-			var masterImportService = new MasterImportService(connString!, mstPathSettings!, emailService!);
-			var stockCsvDownloader = new StockCsvDownload(connString!, StockExportSettings!, emailService, copyStockDataSettings!);
-			var ftpsClientService = new FtpsClientService(FtpsConnectionInfo!, emailService!);
-
+			_emailService = new EmailService(mailConfig!);
+			var dataLoader = new MySqlDataLoaderService(connString!, pathSettings!, _emailService!);
+			var masterImportService = new MasterImportService(connString!, mstPathSettings!, _emailService!);
+			_stockCsvDownloader = new StockCsvDownload(connString!, StockExportSettings!, _emailService, copyStockDataSettings!);
+			_ftpsClientService = new FtpsClientService(FtpsConnectionInfo!, _emailService!);
 			// スケジューラサービスの初期化・開始
-			var schedulerService = new SchedulerService(
+			_schedulerService = new SchedulerService(
 				ohkenApiService,
-				emailService,
-				stockCsvDownloader,
+				_emailService,
+				_stockCsvDownloader,
 				dataLoader,
 				masterImportService,
-				ftpsClientService);
-			await schedulerService.StartAsync();
+				_ftpsClientService);
+		}
+		/// <summary>
+		/// リトライ監視用ルーチン
+		/// </summary>
+		/// <param name="action">顧客向け在庫CSV作成ルーチン</param>
+		/// <returns></returns>
+		static async Task RetryExec(Func<Task> action)
+		{
+			int retryAttempt = 0;
+			while (true)
+			{
+				try
+				{
+					await action();
+					break;
+				}
+				catch (Exception ex)
+				{
+					retryAttempt++;
+					Console.WriteLine($"エラーが発生しました (試行 {retryAttempt}/{MaxRetryCount}): {ex.Message}");
+					if (retryAttempt >= MaxRetryCount)
+					{
+						await _emailService!.SendErrorMailAsync("顧客向けCSV出力エラー", $"{ex}", "Debug");
+						throw;
+					}
+					Console.WriteLine($"{RetryIntervalMs / 1000}秒後にリトライします...");
+					await Task.Delay(RetryIntervalMs);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 顧客向け在庫CSV出力処理(DSからの呼び出し用)
+		/// </summary>
+		/// <param name="args">DS呼び出し用の引数</param>
+		/// <returns></returns>
+		static async Task PublishCSV(string[] args)
+		{
+			if (args.Length > 0 && args[0].ToLower() == "--customer")
+			{
+				using var fileLock = new Mutex(false, MutexName);
+				bool hasHandle = false;
+				try
+				{
+					hasHandle = fileLock.WaitOne();
+
+					Console.WriteLine("【DS連携モード】処理を開始します...");
+					await RetryExec(async () =>
+					{
+						await _schedulerService!.ProcessBackOrders();
+						await _stockCsvDownloader!.ExecBySettings("Customer");
+					});
+
+					Console.WriteLine("【DS連携モード】全ての処理が完了しました。");
+				}
+				finally
+				{
+					if (hasHandle)
+					{
+						fileLock.ReleaseMutex();
+					}
+				}
+			}
+			else
+			{
+				Console.WriteLine("常駐モードでスケジューラ開始します");
+				await _schedulerService!.StartAsync();
+			}
+		}
+
+		/// <summary>
+		/// メインエントリポイント
+		/// </summary>
+		/// <param name="args"></param>
+		/// <returns></returns>
+		static async Task Main(string[] args)
+		{
+			await Init();
+			await RetryExec(() => PublishCSV(args));
+
 		}
 	}
 }

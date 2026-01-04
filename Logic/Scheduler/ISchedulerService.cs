@@ -7,5 +7,6 @@ namespace stockDataImporter.Logic.Scheduler
 	public interface ISchedulerService
 	{
 		Task StartAsync();
+		Task ProcessBackOrders();
 	}
 }

@@ -54,6 +54,16 @@ namespace stockDataImporter.Logic.Scheduler
 				Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
 			}
 		}
+		/// <summary>
+		/// DJN受注残データ出力・取込処理
+		/// </summary>
+		/// <returns></returns>
+		public async Task ProcessBackOrders()
+		{
+			// 受注残CSV書き出し・取込
+			await _ohkenApiService.FetchBackOrdersAsync();
+			await _mySqlDataLoaderService.ExecuteQueryAsync("backOrders");
+		}
 
 		/// <summary>
 		/// 在庫データ出力処理メイン(15分単位での自動作成)
@@ -70,19 +80,18 @@ namespace stockDataImporter.Logic.Scheduler
 				// デバッグ時はここを書換えて1~5分毎に動作させる
 				if (now.Minute % 15 == 8)   // 毎時 8, 23, 38, 53分に判定
 				{
-					// 受注残CSV書き出し
-					Console.WriteLine("-> 受注残データを処理中...");
-					await _ohkenApiService.FetchBackOrdersAsync();
 
-					// 受注残・在庫CSVをDBに取り込み
+					Console.WriteLine("-> 受注残データを処理中...");
+					await ProcessBackOrders();
+
+					// 在庫CSVをDBに取り込み
 					Console.WriteLine("-> データ取込中...");
-					await _mySqlDataLoaderService.ExecuteQueryAsync("backOrders");
 					await _mySqlDataLoaderService.ExecuteQueryAsync("stock");
 
 					// DBから在庫CSVダウンロード・ECB FTPSアップロード処理
 					Console.WriteLine("-> 有効在庫データを出力中...");
 					string createdFilePath = await _stockCsvDownloaderService.ExecBySettings("EC");
-					
+
 
 					Console.WriteLine("-> FTPサーバーへアップロード中...");
 					// await _ftpsClientService.ExecUploadFileAsync(createdFilePath); //	12/23 検証のためコメントアウト
