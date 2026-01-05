@@ -30,6 +30,7 @@ namespace stockDataImporter.Logic.Scheduler
 		private readonly IMasterImportService _masterImportService = masterImportService;
 		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(1));
 		private DateTime? _lastProcessedTime = null;
+		private DateTime? _lastPrcessedTimeECB = null;
 
 		/// <summary>
 		/// 商品マスタ更新処理メイン(毎日2:30に自動作成)
@@ -73,13 +74,22 @@ namespace stockDataImporter.Logic.Scheduler
 		{
 			var now = DateTime.Now;
 			var currentTime = now.TimeOfDay;
+			bool isTargetInterval = now.Minute % 15 == 8;
+
+			bool alreadyRun = _lastPrcessedTimeECB.HasValue &&
+							  _lastPrcessedTimeECB.Value.Hour == now.Hour &&
+							  _lastPrcessedTimeECB.Value.Minute == now.Minute &&
+							  _lastPrcessedTimeECB.Value.Date == now.Date;
 
 			// 15分単位での在庫データ出力処理(7:08～23:38分まで)
 			if (currentTime >= new TimeSpan(7, 8, 0) && currentTime <= new TimeSpan(23, 38, 0))
 			{
 				// デバッグ時はここを書換えて1~5分毎に動作させる
-				if (now.Minute % 15 == 8)   // 毎時 8, 23, 38, 53分に判定
+				if (isTargetInterval && !alreadyRun)   // 毎時 8, 23, 38, 53分に判定
 				{
+					_lastPrcessedTimeECB = now;
+
+					// 受注残CSV書き出し・取込
 					Console.WriteLine("-> 受注残データを処理中...");
 					await ProcessBackOrders();
 
@@ -96,7 +106,7 @@ namespace stockDataImporter.Logic.Scheduler
 					await _ftpsClientService.ExecUploadFileAsync(createdFilePath); //	12/23 検証のためコメントアウト
 
 					// FTPS接続テスト(デバッグ用)
-					await _ftpsClientService.TestConnectionAsync(createdFilePath);
+					// await _ftpsClientService.TestConnectionAsync(createdFilePath);
 
 					//	成功報告メールを送信
 					await _emailService.SendErrorMailAsync("在庫データ連携成功", "在庫データ連携が正常に完了しました。", "Debug");
@@ -127,7 +137,7 @@ namespace stockDataImporter.Logic.Scheduler
 							  _lastProcessedTime.Value.Minute == now.Minute &&
 							  _lastProcessedTime.Value.Date == now.Date;
 
-			// 15分単位での在庫データ出力処理(7:08～23:38分まで)
+			// 15分単位での在庫データ出力処理(7:15～23:55分まで)
 			if (currentTime >= new TimeSpan(7, 15, 0) && currentTime <= new TimeSpan(23, 55, 0))
 			{
 				if (isTargetInterval && !alreadyRun)
