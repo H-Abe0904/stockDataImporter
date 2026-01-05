@@ -45,8 +45,11 @@ namespace stockDataImporter.Logic.ImportStockData
 			_connectionInfo.Port
 			);
 
+			//	ファイルアップロード時の設定
 			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;              //	Explicitモードで通信
-			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;   //	Passiveモードで通信
+			client.Config.DataConnectionType = FtpDataConnectionType.PASV;   //	Passiveモードで通信
+			client.Config.DataConnectionConnectTimeout = 30000;
+			client.Config.ReadTimeout = 30000;
 
 			//	証明書を使用しないため強制的にTrue
 			client.Config.ValidateAnyCertificate = true;
@@ -72,7 +75,7 @@ namespace stockDataImporter.Logic.ImportStockData
 			catch (Exception ex)
 			{
 				Console.WriteLine($"FTPS接続/アップロードエラー: {ex.Message}");
-				await _emailService.SendErrorMailAsync("FTPS接続エラー", $"FTPS接続/アップロードエラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
+				await _emailService.SendErrorMailAsync("FTPS接続エラー", $"FTPS接続/アップロードエラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Rocs");
 				throw; // エラーを呼び出し元に伝える
 			}
 			finally
