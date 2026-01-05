@@ -128,7 +128,6 @@ namespace stockDataImporter.Logic.Scheduler
 							  _lastProcessedTime.Value.Date == now.Date;
 
 			if (isTargetTime && !alreadyRun)
-
 			{
 				//	二重実行防止
 				_lastProcessedTime = now;
@@ -142,7 +141,6 @@ namespace stockDataImporter.Logic.Scheduler
 				//Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
 
 			}
-
 		}
 
 		/// <summary>
