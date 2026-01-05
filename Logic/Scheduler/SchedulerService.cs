@@ -118,7 +118,7 @@ namespace stockDataImporter.Logic.Scheduler
 			var now = DateTime.Now;
 
 			var currentTime = now.TimeOfDay;
-			bool isTargetTime = (now.Hour == 7 || now.Hour == 19) && (now.Minute == 10);
+			bool isTargetInterval = now.Minute % 15 == 0;
 
 			// 2. 同じ「分」に二度実行しないためのチェック
 			// （最後に実行した時刻が現在と同じ「時分」ならスキップ）
@@ -127,22 +127,24 @@ namespace stockDataImporter.Logic.Scheduler
 							  _lastProcessedTime.Value.Minute == now.Minute &&
 							  _lastProcessedTime.Value.Date == now.Date;
 
-			if (isTargetTime && !alreadyRun)
+			// 15分単位での在庫データ出力処理(7:08～23:38分まで)
+			if (currentTime >= new TimeSpan(7, 15, 0) && currentTime <= new TimeSpan(23, 55, 0))
 			{
-				//	二重実行防止
-				_lastProcessedTime = now;
-				await _stockCsvDownloaderService.ExecBySettings("Customer");
-				await _emailService.SendErrorMailAsync("得意先向け在庫データ連携成功", "在庫データ連携が正常に完了しました。", "Debug");
+				if (isTargetInterval && !alreadyRun)
+				{
+					//	二重実行防止
+					_lastProcessedTime = now;
+					await _stockCsvDownloaderService.ExecBySettings("Customer");
+					await _emailService.SendErrorMailAsync("得意先向け在庫データ連携成功", "在庫データ連携が正常に完了しました。", "Debug");
 
-				//	コンソールの情報をクリア
-				Console.WriteLine("\n3秒後に画面をクリアして待機状態に戻ります...");
-				await Task.Delay(3000);
-				Console.Clear();
-				//Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
-
+					//	コンソールの情報をクリア
+					Console.WriteLine("\n3秒後に画面をクリアして待機状態に戻ります...");
+					await Task.Delay(3000);
+					Console.Clear();
+					//Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
+				}
 			}
 		}
-
 		/// <summary>
 		/// 在庫データ出力処理メイン(15分単位での自動作成)
 		/// </summary>
