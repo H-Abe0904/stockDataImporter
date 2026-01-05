@@ -102,7 +102,7 @@ namespace stockDataImporter.Logic.ImportStockData
 
 			//	指定された接続形式を設定
 			client.Config.EncryptionMode = FtpEncryptionMode.Explicit;
-			client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
+			client.Config.DataConnectionType = FtpDataConnectionType.PASV;
 
 			//	証明書を使用しないため強制的にTrue
 			client.Config.ValidateAnyCertificate = true;
