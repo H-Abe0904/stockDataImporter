@@ -64,7 +64,7 @@ namespace stockDataImporter.Logic.ImportStockData
             string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
             //  運用開始時は後者をstock.csvに修正
-            string fileName = label == "EC" ? $"stock_{timestamp}.csv" : "stock_Test.csv";
+            string fileName = label == "EC" ? $"stock_{timestamp}.csv" : "stock.csv";
 
             // 3. 保存先のフォルダが存在するか確認し、なければ作成する
             if (!Directory.Exists(config!.ExportFileNameFormat))

@@ -94,7 +94,7 @@ namespace stockDataImporter.Logic.Scheduler
 
 
 					Console.WriteLine("-> FTPサーバーへアップロード中...");
-					// await _ftpsClientService.ExecUploadFileAsync(createdFilePath); //	12/23 検証のためコメントアウト
+					await _ftpsClientService.ExecUploadFileAsync(createdFilePath); //	12/23 検証のためコメントアウト
 
 					// FTPS接続テスト(デバッグ用)
 					await _ftpsClientService.TestConnectionAsync(createdFilePath);
