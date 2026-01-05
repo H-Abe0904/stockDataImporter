@@ -101,7 +101,6 @@ namespace stockDataImporter.Logic.Scheduler
 					Console.WriteLine("-> 有効在庫データを出力中...");
 					string createdFilePath = await _stockCsvDownloaderService.ExecBySettings("EC");
 
-
 					Console.WriteLine("-> FTPサーバーへアップロード中...");
 					await _ftpsClientService.ExecUploadFileAsync(createdFilePath); //	12/23 検証のためコメントアウト
 
