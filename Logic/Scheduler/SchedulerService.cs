@@ -80,7 +80,6 @@ namespace stockDataImporter.Logic.Scheduler
 				// デバッグ時はここを書換えて1~5分毎に動作させる
 				if (now.Minute % 15 == 8)   // 毎時 8, 23, 38, 53分に判定
 				{
-
 					Console.WriteLine("-> 受注残データを処理中...");
 					await ProcessBackOrders();
 
