@@ -174,7 +174,6 @@ namespace stockDataImporter.Logic.Scheduler
 				}
 				finally
 				{
-
 					_semaphore.Release();   // 排他制御解除
 				}
 			}
