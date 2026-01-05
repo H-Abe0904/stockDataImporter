@@ -78,7 +78,7 @@ namespace stockDataImporter.Logic.Scheduler
 			if (currentTime >= new TimeSpan(7, 8, 0) && currentTime <= new TimeSpan(23, 38, 0))
 			{
 				// デバッグ時はここを書換えて1~5分毎に動作させる
-				if (now.Minute % 15 == 8)   // 毎時 8, 23, 38, 53分に判定
+				if (now.Minute % 15 == 8 && now.Second == 0)   // 毎時 8, 23, 38, 53分に判定
 				{
 
 					Console.WriteLine("-> 受注残データを処理中...");
