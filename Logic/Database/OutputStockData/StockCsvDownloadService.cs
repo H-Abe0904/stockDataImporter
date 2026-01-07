@@ -170,7 +170,6 @@ namespace stockDataImporter.Logic.ImportStockData
                 await _emailService.SendErrorMailAsync("在庫データCSV書込エラー", $"在庫データCSV書込エラーが発生しました。\nエラー内容: {ex.Message} \n{ex.InnerException?.StackTrace}", "Debug");
                 throw;
             }
-
         }
     }
 }
