@@ -81,7 +81,7 @@ namespace stockDataImporter.Logic.Scheduler
 							  _lastPrcessedTimeECB.Value.Minute == now.Minute &&
 							  _lastPrcessedTimeECB.Value.Date == now.Date;
 
-			// 15分単位での在庫データ出力処理(7:08～23:38分まで)
+			// 15分単位での在庫データ出力処理(7:08～23:38まで)
 			if (currentTime >= new TimeSpan(7, 8, 0) && currentTime <= new TimeSpan(23, 38, 0))
 			{
 				// デバッグ時はここを書換えて1~5分毎に動作させる
