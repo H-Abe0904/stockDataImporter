@@ -160,7 +160,6 @@ namespace stockDataImporter.Logic.Scheduler
 		/// <returns></returns>
 		public async Task StartAsync()
 		{
-
 			Console.Clear();
 			Console.WriteLine("========================================================");
 			Console.WriteLine($" バッチ処理開始時刻: {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
