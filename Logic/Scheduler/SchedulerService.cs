@@ -6,6 +6,7 @@ using stockDataImporter.Logic.Messaging;
 using stockDataImporter.Logic.ImportStockData;
 using Microsoft.VisualBasic;
 using Org.BouncyCastle.Security;
+using System.Linq.Expressions;
 
 namespace stockDataImporter.Logic.Scheduler
 {
@@ -31,6 +32,7 @@ namespace stockDataImporter.Logic.Scheduler
 		private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(1));
 		private DateTime? _lastProcessedTime = null;
 		private DateTime? _lastPrcessedTimeECB = null;
+		private bool _isProcessed = false;
 
 		/// <summary>
 		/// 商品マスタ更新処理メイン(毎日2:30に自動作成)
@@ -40,20 +42,61 @@ namespace stockDataImporter.Logic.Scheduler
 		{
 			var now = DateTime.Now;
 			var currentTime = now.TimeOfDay;
-			// 毎日 2:00 に商品マスタ取込処理を実行
-			// 毎日2時半の定期処理
-			if (now.Hour == 2 && now.Minute == 30)
+			// 毎日 3:00 に商品マスタ取込処理を実行
+			if (now.Hour == 3 && now.Minute == 0 && !_isProcessed)
 			{
-				// 日次処理(毎日0時)
-				Console.WriteLine("-> 商品マスタ更新中...");
-				await _masterImportService.ImportMasterDataAsync();
-
-				//	コンソールの情報をクリア
-				Console.WriteLine("\n3秒後に画面をクリアして待機状態に戻ります...");
-				await Task.Delay(3000);
-				Console.Clear();
-				Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
+				_isProcessed = true;    //	発火フラグを立てる
+				try
+				{
+					
+					Console.WriteLine("-> 商品マスタ更新中...");
+					await ExecuteWithRetry(() => _masterImportService.ImportMasterDataAsync(), 3, 120000);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"商品マスタ更新中にエラーが発生しました: {ex.Message}");
+				}
+				finally
+				{
+					//	コンソールの情報をクリア
+					Console.WriteLine("\n3秒後に画面をクリアして待機状態に戻ります...");
+					await Task.Delay(3000);
+					Console.Clear();
+					Console.WriteLine($"{DateTime.Now:HH:mm:ss} 現在待機中です...");
+				}
 			}
+			else if(_isProcessed && (now.Hour != 3 || now.Minute > 0))
+			{
+				_isProcessed = false;
+			}
+		}
+
+		/// <summary>
+		/// ファイルロック時のエラー処理
+		/// </summary>
+		/// <param name="action"></param>
+		/// <param name="maxRetry"></param>
+		/// <param name="delayMs"></param>
+		/// <returns></returns>
+		private async Task ExecuteWithRetry(Func<Task> action, int maxRetry, int delayMs)
+		{
+			Exception? lastException = null;
+			for (int i = 0; i < maxRetry; i++)
+			{
+				try
+				{
+					await action();
+					return;
+				}
+				catch (IOException ex) when (i < maxRetry - 1)
+				{
+					lastException = ex;
+					Console.WriteLine($"ファイルロック中: {delayMs / 1000}秒後にリトライします... ({i + 1}/{maxRetry})");
+					Console.WriteLine(ex.Message);
+					await Task.Delay(delayMs);
+				}
+			}
+			throw new Exception($"最大リトライ回数({maxRetry})を超えました。", lastException);
 		}
 		/// <summary>
 		/// DJN受注残データ出力・取込処理
@@ -169,9 +212,9 @@ namespace stockDataImporter.Logic.Scheduler
 				await _semaphore.WaitAsync();   // 排他制御
 				try
 				{
-					await UPD_ProductMST(); // 商品マスタ更新処理
-					await ECB_StockIF();    // 在庫データ出力処理
-					await DL_Stock_ForCustomer();
+					await UPD_ProductMST();         // 商品マスタ更新処理
+					await ECB_StockIF();            // 在庫データ出力処理
+					await DL_Stock_ForCustomer();   // 各得意先向け在庫CSV作成
 
 				}
 				catch (Exception ex)
